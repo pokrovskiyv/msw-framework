@@ -1,0 +1,33 @@
+flowchart LR
+  %% Core chains
+  subgraph S1[Rhythm of Value]
+    C29[Nedovolstvo] --> C53[Strategirovanie]
+    C53 --> C37[Prioritetny proekt]
+    C37 --> C51[Sprint nedeli]
+    C51 --> C44[Rabochii produkt]
+  end
+
+  subgraph S2[Agency Path]
+    C2[Agentnost] --> C22[Personal Contract]
+    C22 --> C50[Slots]
+    C50 --> C27[Weekly strategizing]
+    C27 --> C43[Publicity & Reputation]
+  end
+
+  subgraph S3[Cyberpersonality and Knowledge]
+    C64[Exocortex] --> C16[Cyberpersonality]
+    C16 --> C35[Self-development practices]
+    C35 --> C54[Creative conveyor]
+    C54 --> C7[Draft]
+    C7 --> C3[Personal brand]
+  end
+
+  %% Normative gate
+  C67[Ethical filters] -. no-go .-> C37
+
+  %% Distinction
+  C46[Role] -. type vs assignment .- C5[Position]
+
+  %% Hints
+  C20[Acceptance criteria] --> C44
+  C8[Increment] --> C44
