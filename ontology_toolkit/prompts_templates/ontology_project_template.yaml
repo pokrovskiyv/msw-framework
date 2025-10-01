@@ -1,0 +1,106 @@
+# Шаблон конфигурации онтологического проекта
+# Используется при выполнении команды: ontology init --project "Project_Name"
+
+project:
+  name: "Project_Name"
+  description: "Описание проекта"
+  version: "0.1.0"
+  created: "2025-10-01"
+  language: "ru"
+
+structure:
+  # Папки, которые будут созданы
+  folders:
+    - README.md
+    - CHANGELOG.md
+    - context/
+    - prompts/
+    - concepts/
+    - methods/
+    - systems/
+    - problems/
+    - artifacts/
+    - tables/
+
+metadata:
+  # Префиксы для ID
+  prefixes:
+    concepts: "C"
+    methods: "M"
+    systems: "S"
+    problems: "P"
+    artifacts: "A"
+    prompts: "R"
+
+  # Статусы понятий
+  statuses:
+    - draft          # Черновик, только name заполнен
+    - draft+filled   # Все поля заполнены, но не проверено
+    - approved       # Проверено и утверждено человеком
+
+  # Типы связей между понятиями
+  relation_types:
+    - requires       # Требует (зависимость)
+    - enables        # Позволяет (результат)
+    - relates_to     # Связано с (общее)
+    - part_of        # Часть (композиция)
+    - instance_of    # Экземпляр (конкретизация)
+    - opposite_of    # Противоположно
+    - similar_to     # Похоже на
+
+  # Типы meta_meta (из FPF, человеко-понятные)
+  meta_meta_types:
+    - Характеристика
+    - Показатель
+    - Значение
+    - Состояние
+    - Роль
+    - Метод
+    - Описание метода
+    - План работ
+    - Выполнение
+    - Артефакт
+    - Система
+    - Проблема
+
+ai:
+  # Настройки AI-заполнения
+  provider: "anthropic"  # anthropic | openai | local
+  model: "claude-sonnet-4"
+  temperature: 0.3
+  max_tokens: 2000
+
+  # Промпты
+  prompts:
+    concept_fill: "prompts_templates/concept_fill.md"
+    context_extract: "prompts_templates/context_extract.md"
+    meta_meta_rules: "prompts_templates/meta_meta_rules.md"
+
+export:
+  # Настройки экспорта
+  csv:
+    delimiter: ","
+    encoding: "utf-8-sig"  # Для корректного отображения в Excel
+    
+  xlsx:
+    sheet_names:
+      - README
+      - context
+      - tables
+      - concepts
+      - methods
+      - systems
+      - problems
+      - artifacts
+      - CHANGELOG
+
+validation:
+  # Правила валидации
+  required_fields:
+    concepts: ["id", "name", "definition", "purpose", "meta_meta"]
+    methods: ["id", "name", "definition", "purpose"]
+    systems: ["id", "name", "definition", "purpose"]
+  
+  check_broken_links: true
+  check_duplicates: true
+  warn_empty_relations: true
