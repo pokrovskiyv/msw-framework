@@ -213,6 +213,24 @@ ontology fill C_4 --provider openai
 ontology fill C_4 --provider openai --model gpt-4
 ```
 
+#### Batch заполнение всех понятий
+
+```bash
+# Показать что будет заполнено (dry run)
+ontology fill-all --dry-run
+
+# Заполнить все пустые понятия (исключая approved и draft+filled)
+ontology fill-all
+
+# Настроить исключения
+ontology fill-all --exclude-status "approved,draft+filled,review"
+
+# Изменить паузу между запросами
+ontology fill-all --delay 5
+```
+
+> ⚡ **Принцип качества сохраняется**: каждое понятие заполняется отдельным запросом!
+
 ### Команда `ontology extract`
 
 #### Извлечь понятия из файла

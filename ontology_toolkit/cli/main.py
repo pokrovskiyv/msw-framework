@@ -595,6 +595,132 @@ def fill(
         raise typer.Exit(code=1)
 
 
+@app.command(name="fill-all")
+def fill_all(
+    exclude_status: str = typer.Option(
+        "approved,draft+filled", 
+        "--exclude-status", 
+        help="Статусы для исключения (через запятую)"
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Показать что будет заполнено, не выполнять"),
+    delay: int = typer.Option(2, "--delay", help="Пауза между запросами (секунды)"),
+    path: Path = typer.Option(DEFAULT_ONTOLOGY_PATH, "--path", help="Путь к онтологии")
+):
+    """
+    Заполнить все понятия через AI (кроме исключенных статусов).
+    
+    По умолчанию исключает: approved, draft+filled
+    Заполняет каждое понятие отдельно для качества (принцип: 1 понятие = 1 запрос).
+    """
+    try:
+        # Проверяем существование онтологии
+        if not path.exists():
+            console.print(f"[red][ERROR] Онтология не найдена: {path}[/red]")
+            console.print(f"[yellow][TIP] Выполните: ontology init[/yellow]")
+            raise typer.Exit(code=1)
+        
+        # Загружаем онтологию
+        console.print("[blue]Загрузка онтологии...[/blue]")
+        onto = Ontology(path)
+        onto.load_all()
+        console.print(f"[dim]Загружено объектов: {len(onto.index.by_id)}[/dim]")
+        
+        # Получаем список статусов для исключения
+        excluded_statuses = [s.strip() for s in exclude_status.split(",")]
+        console.print(f"[dim]Исключаем статусы: {', '.join(excluded_statuses)}[/dim]")
+        
+        # Находим понятия для заполнения
+        concepts_to_fill = []
+        for entity in onto.index.by_id.values():
+            if hasattr(entity, 'prefix') and entity.prefix == "C":
+                if entity.status.value not in excluded_statuses:
+                    concepts_to_fill.append(entity)
+        
+        if not concepts_to_fill:
+            console.print("[yellow]Нет понятий для заполнения![/yellow]")
+            console.print("[dim]Все понятия уже имеют исключенные статусы[/dim]")
+            return
+        
+        console.print(f"[green]Найдено понятий для заполнения: {len(concepts_to_fill)}[/green]")
+        
+        # Показываем список
+        from rich.table import Table
+        table = Table(title="Понятия для заполнения")
+        table.add_column("ID", style="cyan")
+        table.add_column("Название", style="white")
+        table.add_column("Статус", style="yellow")
+        
+        for concept in concepts_to_fill:
+            table.add_row(concept.id, concept.name, concept.status.value)
+        
+        console.print(table)
+        
+        if dry_run:
+            console.print("[yellow]Dry run - ничего не заполнено[/yellow]")
+            return
+        
+        # Подтверждение
+        if not typer.confirm(f"Заполнить {len(concepts_to_fill)} понятий через AI?"):
+            console.print("[yellow]Отменено[/yellow]")
+            return
+        
+        # Создаём AI провайдер
+        from ontology_toolkit.ai.factory import AIProviderFactory
+        from ontology_toolkit.ai.client import AIClient
+        from ontology_toolkit.ai.filler import ConceptFiller
+        from ontology_toolkit.ai.base_provider import AIProviderError
+        
+        try:
+            ai_provider = AIProviderFactory.from_env()
+        except AIProviderError as e:
+            console.print(f"[red][ERROR] {e}[/red]")
+            console.print(f"\n[yellow][TIP] Проверьте конфигурацию:[/yellow]")
+            console.print(f"[dim]ontology config-ai --check[/dim]")
+            raise typer.Exit(code=1)
+        
+        client = AIClient(ai_provider)
+        filler = ConceptFiller(client, onto)
+        
+        # Заполняем по одному (принцип качества!)
+        success_count = 0
+        error_count = 0
+        
+        console.print(f"\n[blue]Начинаем заполнение (пауза между запросами: {delay}с)...[/blue]")
+        
+        for i, concept in enumerate(concepts_to_fill, 1):
+            console.print(f"\n[blue]({i}/{len(concepts_to_fill)}) Заполняем {concept.id} - {concept.name}...[/blue]")
+            
+            try:
+                # Заполняем понятие
+                filled_concept = filler.fill_concept(concept.id)
+                onto.save_concept(filled_concept)
+                
+                console.print(f"[green]✓ {concept.id} заполнено![/green]")
+                success_count += 1
+                
+            except Exception as e:
+                console.print(f"[red]✗ Ошибка при заполнении {concept.id}: {e}[/red]")
+                error_count += 1
+            
+            # Пауза между запросами (кроме последнего)
+            if i < len(concepts_to_fill):
+                import time
+                console.print(f"[dim]Пауза {delay}с...[/dim]")
+                time.sleep(delay)
+        
+        # Итоги
+        console.print(f"\n[green]Готово![/green]")
+        console.print(f"[green]Успешно заполнено: {success_count}[/green]")
+        if error_count > 0:
+            console.print(f"[red]Ошибок: {error_count}[/red]")
+        
+        console.print(f"\n[yellow][TIP] Проверьте результат: ontology audit[/yellow]")
+        
+    except Exception as e:
+        console.print(f"[red][ERROR] Неожиданная ошибка: {e}[/red]")
+        raise typer.Exit(code=1)
+
+
 @app.command(name="extract")
 def extract(
     source: str = typer.Argument(..., help="Путь к файлу или текст"),
