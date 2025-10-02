@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ontology-toolkit"
-version = "0.3.0"
-description = "Инструмент для управления онтологией проекта с опорой на FPF"
+version = "0.2.1"
+description = "Инструмент для управления онтологией проекта с опорой на FPF (CLI MVP + AI архитектура)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -14,8 +14,10 @@ authors = [
 ]
 keywords = ["ontology", "fpf", "knowledge-management", "concepts", "ai", "llm"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Topic :: Documentation",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
