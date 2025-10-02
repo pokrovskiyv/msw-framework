@@ -7,9 +7,6 @@
 
 ## [Unreleased]
 
-### В разработке
-- Автозагрузка контекста проекта из `.ontology/context/project_context.yaml`
-
 ### Планируется (v0.4.0+)
 - Batch AI processing с progress bar
 - AI-предложения связей между понятиями
@@ -17,6 +14,24 @@
 - Поддержка Methods, Systems, Problems, Artifacts в CLI
 - Расширенный граф с фильтрами и стилями
 - `ontology fix-relations` — автоисправление связей
+
+---
+
+## [0.3.1] - 2025-10-02
+
+### Added
+- **Автозагрузка контекста проекта** — AI автоматически читает `.ontology/context/project_context.yaml`
+  - Новый метод `ConceptFiller._load_project_context()` для чтения YAML и MD/TXT файлов
+  - Обновлён `_prepare_context()` для использования контекста проекта
+  - Template `project_context_template.yaml` создаётся при `ontology init`
+  - Документация в README об использовании контекста
+
+### Fixed
+- Исправлен `RelationType.RELATED_TO` → `RelationType.RELATES_TO` в `filler.py`
+
+### Changed
+- Команда `ontology init` теперь создаёт папку `context/` и файл `project_context.yaml`
+- Обновлён README с секцией "Контекст проекта для AI"
 
 ---
 

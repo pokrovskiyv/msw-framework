@@ -106,10 +106,10 @@ class ConceptFiller:
 
     def _prepare_context(self) -> Dict[str, str]:
         """
-        Подготовить контекст для AI (список существующих объектов).
+        Подготовить контекст для AI (список существующих объектов + контекст проекта).
         
         Returns:
-            Словарь с данными по типам объектов
+            Словарь с данными по типам объектов и контекст проекта
         """
         context = {}
         
@@ -127,7 +127,9 @@ class ConceptFiller:
         context["methods"] = ""
         context["systems"] = ""
         context["artifacts"] = ""
-        context["context"] = ""
+        
+        # Загружаем контекст проекта из файлов
+        context["context"] = self._load_project_context()
         
         return context
 
@@ -241,9 +243,77 @@ class ConceptFiller:
                 # Проверяем, существует ли такой объект
                 if target_id in self.ontology.index.by_id:
                     relations.append(Relation(
-                        type=RelationType.RELATED_TO,
+                        type=RelationType.RELATES_TO,
                         target=target_id
                     ))
         
         return relations
+
+    def _load_project_context(self) -> str:
+        """
+        Загрузить контекст проекта из .ontology/context/ файлов.
+        
+        Returns:
+            Контекст проекта в текстовом виде
+        """
+        from pathlib import Path
+        import yaml
+        
+        context_dir = self.ontology.root_path / "context"
+        
+        if not context_dir.exists():
+            return "Нет"
+        
+        context_parts = []
+        
+        # 1. Читаем project_context.yaml (основной контекст)
+        yaml_file = context_dir / "project_context.yaml"
+        if yaml_file.exists():
+            try:
+                with open(yaml_file, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f)
+                    if data:
+                        # Форматируем YAML в читаемый текст
+                        if 'project' in data:
+                            proj = data['project']
+                            context_parts.append(f"Проект: {proj.get('name', 'N/A')}")
+                            context_parts.append(f"Описание: {proj.get('description', 'N/A')}")
+                            if 'domain' in proj:
+                                context_parts.append(f"Предметная область: {proj['domain']}")
+                        
+                        if 'purpose' in data:
+                            context_parts.append(f"Цель: {data['purpose']}")
+                        
+                        if 'target_audience' in data:
+                            context_parts.append(f"Аудитория: {data['target_audience']}")
+                        
+                        if 'key_concepts' in data:
+                            context_parts.append(f"Ключевые концепты: {data['key_concepts']}")
+                        
+                        if 'guidelines' in data:
+                            context_parts.append(f"Принципы: {data['guidelines']}")
+            except Exception as e:
+                # Если не получилось распарсить YAML, пропускаем
+                pass
+        
+        # 2. Читаем другие .md или .txt файлы из context/
+        for context_file in context_dir.glob("*.md"):
+            try:
+                content = context_file.read_text(encoding='utf-8')
+                # Берем первые 500 символов из каждого файла
+                context_parts.append(f"{context_file.stem}: {content[:500]}")
+            except Exception:
+                pass
+        
+        for context_file in context_dir.glob("*.txt"):
+            try:
+                content = context_file.read_text(encoding='utf-8')
+                context_parts.append(f"{context_file.stem}: {content[:500]}")
+            except Exception:
+                pass
+        
+        if context_parts:
+            return "\n".join(context_parts)
+        
+        return "Нет"
 

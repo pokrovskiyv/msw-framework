@@ -91,7 +91,7 @@ def init(
     """
     try:
         # Создаём структуру папок
-        folders = ["concepts", "methods", "systems", "problems", "artifacts"]
+        folders = ["concepts", "methods", "systems", "problems", "artifacts", "context"]
         
         for folder in folders:
             folder_path = path / folder
@@ -111,6 +111,7 @@ def init(
 - `systems/` — системы (S_*)
 - `problems/` — проблемы (P_*)
 - `artifacts/` — артефакты (A_*)
+- `context/` — контекст проекта для AI
 
 ## Использование
 
@@ -134,8 +135,18 @@ ontology export --format csv
 """
             readme_path.write_text(readme_content, encoding="utf-8")
         
+        # Создаём project_context.yaml из template
+        context_file = path / "context" / "project_context.yaml"
+        if not context_file.exists():
+            template_path = Path(__file__).parent.parent / "prompts_templates" / "project_context_template.yaml"
+            if template_path.exists():
+                import shutil
+                shutil.copy(template_path, context_file)
+                console.print(f"[dim]Создан template: context/project_context.yaml[/dim]")
+        
         console.print(f"[green][OK] Онтология инициализирована в {path.absolute()}[/green]")
         console.print(f"[dim]Создано папок: {len(folders)}[/dim]")
+        console.print(f"\n[yellow][TIP] Заполните context/project_context.yaml для улучшения AI заполнения![/yellow]")
         
     except Exception as e:
         console.print(f"[red][ERROR] Ошибка инициализации: {e}[/red]")

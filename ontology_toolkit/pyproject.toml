@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ontology-toolkit"
-version = "0.3.0.1"
+version = "0.3.1"
 description = "Инструмент для управления онтологией проекта с опорой на FPF (CLI + AI интеграция)"
 readme = "README.md"
 requires-python = ">=3.10"
