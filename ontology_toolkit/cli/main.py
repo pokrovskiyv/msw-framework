@@ -245,7 +245,11 @@ def list_entities(
         
         for entity in entities:
             status_str = entity.status.value if hasattr(entity, 'status') else "-"
-            meta_meta_str = entity.meta_meta.value if hasattr(entity, 'meta_meta') and entity.meta_meta else "-"
+            # meta_meta может быть enum или строкой
+            if hasattr(entity, 'meta_meta') and entity.meta_meta:
+                meta_meta_str = entity.meta_meta.value if hasattr(entity.meta_meta, 'value') else str(entity.meta_meta)
+            else:
+                meta_meta_str = "-"
             
             table.add_row(
                 entity.id,
@@ -565,7 +569,10 @@ def fill(
         console.print(f"[dim]Название:[/dim] {concept.name}")
         console.print(f"[dim]Определение:[/dim] {concept.definition[:100]}...")
         console.print(f"[dim]Назначение:[/dim] {concept.purpose[:100]}...")
-        console.print(f"[dim]Тип:[/dim] {concept.meta_meta.value if concept.meta_meta else '-'}")
+        
+        # meta_meta может быть enum или строкой
+        meta_meta_display = concept.meta_meta.value if hasattr(concept.meta_meta, 'value') else str(concept.meta_meta) if concept.meta_meta else '-'
+        console.print(f"[dim]Тип:[/dim] {meta_meta_display}")
         console.print(f"[dim]Примеры:[/dim] {len(concept.examples)}")
         console.print(f"[dim]Статус:[/dim] {concept.status.value}")
         
@@ -654,11 +661,14 @@ def extract(
         table.add_column("Тип", style="yellow")
         
         for concept in concepts:
+            # meta_meta может быть enum или строкой
+            meta_meta_display = concept.meta_meta.value if hasattr(concept.meta_meta, 'value') else str(concept.meta_meta) if concept.meta_meta else "-"
+            
             table.add_row(
                 concept.id,
                 concept.name,
                 concept.definition[:50] + "..." if len(concept.definition) > 50 else concept.definition,
-                concept.meta_meta.value if concept.meta_meta else "-"
+                meta_meta_display
             )
         
         console.print(table)

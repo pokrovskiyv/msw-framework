@@ -7,6 +7,9 @@
 
 ## [Unreleased]
 
+### В разработке
+- Автозагрузка контекста проекта из `.ontology/context/project_context.yaml`
+
 ### Планируется (v0.4.0+)
 - Batch AI processing с progress bar
 - AI-предложения связей между понятиями
@@ -14,6 +17,19 @@
 - Поддержка Methods, Systems, Problems, Artifacts в CLI
 - Расширенный граф с фильтрами и стилями
 - `ontology fix-relations` — автоисправление связей
+
+---
+
+## [0.3.0.1] - 2025-10-02
+
+### Fixed
+- **Исправлен баг с `meta_meta.value`** — добавлены проверки `hasattr()` в CLI для безопасного отображения
+- **Исправлено преобразование `meta_meta`** — AI ответ теперь корректно конвертируется из строки в enum `MetaMetaType`
+- **Обновлен маппинг `MetaMetaType`** — используются только реальные значения из schema.py
+
+### Changed
+- Улучшена обработка `meta_meta` в `ConceptFiller._parse_ai_response()`
+- Добавлены безопасные проверки в `cli/main.py` для команд `list`, `fill`, `extract`
 
 ---
 

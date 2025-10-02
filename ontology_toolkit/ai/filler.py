@@ -182,8 +182,28 @@ class ConceptFiller:
         if "purpose" in column_data:
             result["purpose"] = column_data["purpose"]
         
-        if "meta_meta" in column_data:
-            result["meta_meta"] = column_data["meta_meta"] or None
+        if "meta_meta" in column_data and column_data["meta_meta"]:
+            # Преобразуем строку в enum MetaMetaType
+            from ontology_toolkit.core.schema import MetaMetaType
+            meta_str = column_data["meta_meta"].lower()
+            
+            # Маппинг основан на реальных значениях из schema.py
+            type_mapping = {
+                "характеристика": MetaMetaType.CHARACTERISTIC,
+                "показатель": MetaMetaType.INDICATOR,
+                "значение": MetaMetaType.VALUE,
+                "состояние": MetaMetaType.STATE,
+                "роль": MetaMetaType.ROLE,
+                "метод": MetaMetaType.METHOD,
+                "описание метода": MetaMetaType.METHOD_DESCRIPTION,
+                "план работ": MetaMetaType.WORK_PLAN,
+                "выполнение": MetaMetaType.EXECUTION,
+                "артефакт": MetaMetaType.ARTIFACT,
+                "система": MetaMetaType.SYSTEM,
+                "проблема": MetaMetaType.PROBLEM
+            }
+            
+            result["meta_meta"] = type_mapping.get(meta_str, None)
         
         if "examples" in column_data and column_data["examples"]:
             # Разбиваем примеры по точке с запятой
