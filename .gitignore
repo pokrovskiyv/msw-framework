@@ -73,3 +73,6 @@ my_contract_*.md
 *.swp
 *.tmp
 ~$*
+
+# Development methodology (private document)
+DEVELOPMENT_METHODOLOGY.md
