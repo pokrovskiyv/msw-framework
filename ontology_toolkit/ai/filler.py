@@ -143,25 +143,54 @@ class ConceptFiller:
         """
         result = {}
         
-        # Ищем Markdown таблицу в ответе
-        table_match = re.search(r'\|.*?\|.*?\|.*?\n\|[-:| ]+\|\n(\|.*?\|.*?\n)', response, re.MULTILINE | re.DOTALL)
+        # Ищем Markdown таблицу в ответе (с заголовком, разделителем и данными)
+        # Разбиваем ответ на строки и ищем таблицу
+        lines = [line.strip() for line in response.split('\n') if line.strip()]
         
-        if table_match:
-            # Извлекаем строку с данными
-            data_row = table_match.group(1)
-            # Разбиваем на ячейки
-            cells = [cell.strip() for cell in data_row.split('|') if cell.strip()]
-            
-            # Ожидаемый порядок: id, name, definition, purpose, meta_meta, examples, relations
-            if len(cells) >= 3:
-                result["definition"] = cells[2] if len(cells) > 2 else ""
-                result["purpose"] = cells[3] if len(cells) > 3 else ""
-                result["meta_meta"] = cells[4] if len(cells) > 4 else None
-                result["examples"] = cells[5].split("; ") if len(cells) > 5 and cells[5] else []
-                
-                # Парсим relations
-                if len(cells) > 6 and cells[6]:
-                    result["relations"] = self._parse_relations(cells[6])
+        # Находим строки таблицы
+        table_lines = [line for line in lines if line.startswith('|') and line.endswith('|')]
+        
+        if len(table_lines) < 3:
+            return result
+        
+        # Первая строка - заголовки, вторая - разделитель, третья+ - данные
+        header_line = table_lines[0]
+        data_line = table_lines[2] if len(table_lines) > 2 else None
+        
+        if not data_line:
+            return result
+        
+        # Парсим заголовки (убираем первый и последний |)
+        headers = [h.strip().lower() for h in header_line.strip('|').split('|')]
+        
+        # Парсим данные (убираем первый и последний |)
+        cells = [cell.strip() for cell in data_line.strip('|').split('|')]
+        
+        # Создаём mapping: имя колонки -> значение
+        if len(headers) != len(cells):
+            # Если количество не совпадает, пытаемся работать с минимумом
+            min_len = min(len(headers), len(cells))
+            headers = headers[:min_len]
+            cells = cells[:min_len]
+        
+        column_data = dict(zip(headers, cells))
+        
+        # Извлекаем нужные поля
+        if "definition" in column_data:
+            result["definition"] = column_data["definition"]
+        
+        if "purpose" in column_data:
+            result["purpose"] = column_data["purpose"]
+        
+        if "meta_meta" in column_data:
+            result["meta_meta"] = column_data["meta_meta"] or None
+        
+        if "examples" in column_data and column_data["examples"]:
+            # Разбиваем примеры по точке с запятой
+            result["examples"] = [ex.strip() for ex in column_data["examples"].split(";") if ex.strip()]
+        
+        if "relations" in column_data and column_data["relations"]:
+            result["relations"] = self._parse_relations(column_data["relations"])
         
         return result
 

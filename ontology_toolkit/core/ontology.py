@@ -377,6 +377,18 @@ class Ontology:
         """Найти понятия по статусу."""
         return self.index.by_status.get(status.value, [])
 
+    def get_next_id(self, prefix: str) -> str:
+        """
+        Получить следующий свободный ID для префикса.
+        
+        Args:
+            prefix: Префикс (C, M, S, P, A)
+            
+        Returns:
+            Следующий ID (например, C_5)
+        """
+        return self.index.get_next_id(prefix)
+
     def suggest_relations(self, entity_id: str, max_suggestions: int = 5) -> List[str]:
         """
         Предложить возможные связи для объекта на основе текстовой близости.

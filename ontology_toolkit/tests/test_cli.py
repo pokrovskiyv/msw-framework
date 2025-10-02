@@ -30,7 +30,7 @@ def test_init_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "✅" in result.stdout
+    assert "[OK]" in result.stdout
     
     # Проверяем структуру
     assert ontology_path.exists()
@@ -57,7 +57,7 @@ def test_add_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "✅" in result.stdout
+    assert "[OK]" in result.stdout
     assert "C_1" in result.stdout
     
     # Проверяем, что файл создан
@@ -77,7 +77,7 @@ def test_add_command_without_init(tmp_path: Path):
     ])
     
     assert result.exit_code == 1
-    assert "❌" in result.stdout
+    assert "[ERROR]" in result.stdout
 
 
 def test_list_command_empty(tmp_path: Path):
@@ -157,7 +157,7 @@ def test_export_csv_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "✅" in result.stdout
+    assert "[OK]" in result.stdout
     assert output_file.exists()
 
 
@@ -177,7 +177,7 @@ def test_export_xlsx_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "✅" in result.stdout
+    assert "[OK]" in result.stdout
     assert output_file.exists()
 
 
@@ -196,7 +196,7 @@ def test_graph_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "✅" in result.stdout
+    assert "[OK]" in result.stdout
     assert output_file.exists()
     
     # Проверяем содержимое

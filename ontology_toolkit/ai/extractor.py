@@ -144,8 +144,11 @@ class ConceptExtractor:
         # Извлекаем строки с данными
         data_rows = table_match.group(1).strip().split('\n')
         
-        # Получаем следующий ID
-        next_id = self.ontology.get_next_id("C")
+        # Получаем следующий ID (формат: C_5)
+        next_id_str = self.ontology.get_next_id("C")
+        # Извлекаем номер из ID
+        from ontology_toolkit.core.schema import ConceptSchema
+        _, next_num = ConceptSchema.parse_id(next_id_str)
         
         for i, row in enumerate(data_rows):
             cells = [cell.strip() for cell in row.split('|') if cell.strip()]
@@ -163,9 +166,9 @@ class ConceptExtractor:
                 # Парсим examples
                 examples = [ex.strip() for ex in examples_str.split(";") if ex.strip()]
                 
-                # Создаём понятие
+                # Создаём понятие с уникальным ID
                 concept = Concept(
-                    id=f"C_{next_id + i}",
+                    id=ConceptSchema.format_id("C", next_num + i),
                     name=name,
                     definition=definition,
                     purpose=purpose,
@@ -195,13 +198,14 @@ class ConceptExtractor:
         # Мапинг русских названий на enum
         type_mapping = {
             "характеристика": MetaMetaType.CHARACTERISTIC,
-            "показатель": MetaMetaType.METRIC,
+            "показатель": MetaMetaType.INDICATOR,
             "значение": MetaMetaType.VALUE,
             "состояние": MetaMetaType.STATE,
             "роль": MetaMetaType.ROLE,
             "метод": MetaMetaType.METHOD,
             "описание метода": MetaMetaType.METHOD_DESCRIPTION,
             "план работ": MetaMetaType.WORK_PLAN,
+            "выполнение": MetaMetaType.EXECUTION,
             "артефакт": MetaMetaType.ARTIFACT,
             "система": MetaMetaType.SYSTEM,
             "проблема": MetaMetaType.PROBLEM,
