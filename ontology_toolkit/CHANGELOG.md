@@ -1,0 +1,191 @@
+# Changelog
+
+Все значимые изменения в проекте будут документироваться в этом файле.
+
+Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/),
+и этот проект придерживается [Semantic Versioning](https://semver.org/lang/ru/).
+
+## [Unreleased]
+
+### Планируется
+- Импорт из CSV/XLSX обратно в онтологию
+- Поддержка Methods, Systems, Problems, Artifacts в CLI
+- Расширенный граф с фильтрами и стилями
+- `ontology fix-relations` — автоисправление связей
+- Batch AI processing с progress bar
+- AI-предложения связей между понятиями
+
+---
+
+## [0.3.0] - 2025-10-02
+
+### Added
+- **AI Integration** — универсальная поддержка 4 AI провайдеров:
+  - Anthropic Claude (Sonnet, Opus, Haiku)
+  - OpenAI ChatGPT (GPT-4, GPT-4 Turbo, GPT-3.5)
+  - Google Gemini (Gemini Pro)
+  - xAI Grok (Grok-1, Grok-2)
+- **Новая команда `config-ai`** — управление конфигурацией AI:
+  - `--show` — показать текущие настройки
+  - `--check` — проверить доступность провайдера
+  - `--list-providers` — список всех провайдеров
+- **Новая команда `fill`** — автозаполнение понятий через AI:
+  - Заполняет definition, purpose, meta_meta, examples
+  - Находит связи с существующими понятиями
+  - Поддержка `--fields` для выборочного заполнения
+  - Поддержка `--provider` для выбора AI модели
+  - Поддержка `--context` для дополнительного контекста
+- **Новая команда `extract`** — извлечение понятий из текста:
+  - Анализ MD/TXT файлов
+  - Извлечение 3-7 ключевых понятий
+  - Режим `--preview` для предпросмотра
+  - Режим `--auto-add` для автоматического добавления
+- **AI модуль** (`ai/`):
+  - `base_provider.py` — абстрактный базовый класс
+  - `factory.py` — фабрика провайдеров с ENV конфигурацией
+  - `client.py` — унифицированный клиент
+  - `prompts.py` — загрузка и рендеринг промптов
+  - `filler.py` — логика автозаполнения
+  - `extractor.py` — логика извлечения понятий
+  - `providers/` — реализации для 4 провайдеров
+- **Опциональные зависимости** в `pyproject.toml`:
+  - `[ai-openai]` — для OpenAI
+  - `[ai-gemini]` — для Gemini
+  - `[ai-grok]` — для Grok
+  - `[ai-all]` — все провайдеры сразу
+- **Конфигурация через ENV**:
+  - `ONTOLOGY_AI_PROVIDER` — выбор провайдера
+  - `{PROVIDER}_API_KEY` — API ключи
+  - `ONTOLOGY_AI_MODEL` — выбор модели
+  - `ONTOLOGY_AI_TEMPERATURE` — температура генерации
+- **Тесты** (`tests/test_ai.py`):
+  - Mock провайдер для unit-тестов
+  - Тесты фабрики, клиента, filler, extractor
+  - Интеграционные тесты с реальным API (опционально)
+- **Документация**:
+  - `AI_GUIDE.md` — полное руководство по AI (388 строк)
+  - `RELEASE_NOTES_v0.3.0.md` — детальные release notes
+  - Обновлен `README.md` с разделом AI
+  - Обновлен `ROADMAP.md`
+
+### Changed
+- Версия: `0.2.0` → `0.3.0`
+- Статус проекта: `Alpha` → `Beta`
+- Keywords: добавлены `ai`, `llm`
+- `cli/main.py` — добавлено 280+ строк для AI команд
+
+### Fixed
+- **Windows кодировка UTF-8** — улучшена функция `fix_windows_encoding`:
+  - Автоматическое определение правильной кириллицы
+  - Исправление только "кракозябр" (latin-1 → utf-8)
+  - Полная поддержка кириллицы в Windows Terminal с PowerShell Profile
+- **Документация** — обновлен `WINDOWS_ENCODING.md` с проверенными решениями
+
+---
+
+## [0.2.0] - 2025-10-02
+
+### Added
+- **CLI MVP** — 6 основных команд:
+  - `init` — инициализация онтологии
+  - `add` — добавление понятий
+  - `list` — просмотр списка с фильтрами
+  - `audit` — проверка качества
+  - `export` — экспорт в CSV/XLSX
+  - `graph` — генерация Mermaid графа
+- **IO модули**:
+  - `io/csv_export.py` — экспорт в CSV с UTF-8-sig
+  - `io/xlsx_export.py` — экспорт в XLSX с вкладками
+  - Поддержка фильтров по префиксу и статусу
+- **Тесты**:
+  - `tests/test_io.py` — тесты экспорта (8 тестов)
+  - `tests/test_cli.py` — тесты CLI (12 тестов)
+  - Покрытие основных сценариев использования
+- **Документация**:
+  - `QUICK_START.md` — быстрый старт
+  - `USER_GUIDE.md` — полное руководство
+  - `.cursorrules` — интеграция с Cursor
+  - `WINDOWS_ENCODING.md` — решение проблем кодировки
+  - `RELEASE_NOTES_v0.2.0.md`
+- **Rich console** — красивый вывод с таблицами и цветами
+
+### Fixed
+- Проблема с кодировкой UTF-8 в Windows консоли
+- Конфликт имён в команде `list` (переименована в `list_entities`)
+- Транслитерация имён файлов для безопасности в Windows
+- Корректная работа с путями, содержащими пробелы
+
+### Changed
+- Улучшена структура `pyproject.toml` для setuptools
+- Package discovery: явное указание пакетов и `package-dir`
+- Установка: переход с `-e` (editable) на обычную для Windows
+
+---
+
+## [0.1.0] - 2025-10-01
+
+### Added
+- **Ядро (`core/`)**:
+  - `schema.py` — Pydantic схемы для всех типов объектов:
+    - `Concept` — понятия
+    - `Method` — методы
+    - `System` — системы
+    - `Problem` — проблемы
+    - `Artifact` — артефакты
+  - `concept.py` — работа с понятиями (MD + YAML frontmatter):
+    - `ConceptFile` — чтение/запись
+    - `ConceptFactory` — создание draft и filled
+  - `ontology.py` — управление онтологией:
+    - `OntologyIndex` — индексация по ID, name, prefix, status
+    - `Ontology` — загрузка, валидация, граф (networkx)
+- **Схемы данных**:
+  - Статусы: `draft`, `draft+filled`, `approved`
+  - Типы связей: `relates_to`, `enables`, `requires`, etc.
+  - MetaMetaType: 11 фундаментальных типов по FPF
+- **Граф связей** — networkx для построения и валидации
+- **Валидация**:
+  - Проверка broken links
+  - Поиск циклических зависимостей
+  - Проверка корректности ID
+- **Базовые тесты** (`tests/test_basic_flow.py`)
+- **Промпты** (`prompts_templates/`):
+  - `concept_fill.md` — для AI-заполнения
+  - `context_extract.md` — для извлечения контекста
+  - `meta_meta_rules.md` — правила FPF
+- **Документация**:
+  - `README.md` — основная документация
+  - `ROADMAP.md` — план развития
+  - `pyproject.toml` — конфигурация проекта
+- **Зависимости**:
+  - `pyyaml` — работа с YAML
+  - `pydantic` — валидация данных
+  - `networkx` — граф связей
+  - `pandas`, `openpyxl` — экспорт данных
+  - `python-frontmatter` — парсинг MD + YAML
+  - `typer`, `rich` — CLI
+  - `anthropic` — AI integration (подготовка)
+
+### Technical
+- Python 3.10+ поддержка
+- MIT лицензия
+- Git-friendly формат (MD + YAML)
+- Type hints для всех публичных API
+
+---
+
+## Типы изменений
+
+- `Added` — новые функции
+- `Changed` — изменения в существующей функциональности
+- `Deprecated` — функции, которые скоро будут удалены
+- `Removed` — удалённые функции
+- `Fixed` — исправления багов
+- `Security` — исправления уязвимостей
+
+---
+
+[Unreleased]: https://github.com/system-career/ontology-toolkit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/system-career/ontology-toolkit/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/system-career/ontology-toolkit/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/system-career/ontology-toolkit/releases/tag/v0.1.0
+

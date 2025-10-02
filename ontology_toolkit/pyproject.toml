@@ -4,17 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ontology-toolkit"
-version = "0.1.0"
+version = "0.3.0"
 description = "Инструмент для управления онтологией проекта с опорой на FPF"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "System Career Team"}
 ]
-keywords = ["ontology", "fpf", "knowledge-management", "concepts"]
+keywords = ["ontology", "fpf", "knowledge-management", "concepts", "ai", "llm"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -41,16 +41,26 @@ dev = [
     "ruff>=0.5.0",
     "mypy>=1.11.0",
 ]
+ai-openai = [
+    "openai>=1.0.0",
+]
+ai-gemini = [
+    "google-generativeai>=0.3.0",
+]
+ai-grok = [
+    "openai>=1.0.0",
+]
+ai-all = [
+    "openai>=1.0.0",
+    "google-generativeai>=0.3.0",
+]
 
 [project.scripts]
 ontology = "ontology_toolkit.cli.main:app"
 
 [tool.setuptools]
-packages = {find = {}}
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["ontology_toolkit*"]
+packages = ["ontology_toolkit", "ontology_toolkit.core", "ontology_toolkit.cli", "ontology_toolkit.io", "ontology_toolkit.ai", "ontology_toolkit.mcp"]
+package-dir = {"ontology_toolkit" = "."}
 
 [tool.black]
 line-length = 100

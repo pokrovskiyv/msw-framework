@@ -1,0 +1,198 @@
+# Ontology Toolkit — Cursor Rules
+
+## Описание проекта
+
+Ontology Toolkit — инструмент для управления онтологией проекта (понятиями, методами, системами).
+Формат хранения: Markdown + YAML frontmatter (Git-friendly, каждое понятие — отдельный файл).
+
+## Доступные CLI команды
+
+### Инициализация
+```bash
+ontology init --project "Название проекта"
+```
+Создаёт структуру `.ontology/{concepts,methods,systems,problems,artifacts}` + README.
+
+### Добавление понятий
+```bash
+ontology add "Название понятия"
+```
+Создаёт черновик понятия в `.ontology/concepts/C_N_nazvanie.md`.
+
+### Просмотр списка
+```bash
+ontology list                      # Все объекты
+ontology list --status draft       # Только черновики
+ontology list --prefix C           # Только понятия
+```
+
+### Проверка качества
+```bash
+ontology audit
+```
+Показывает статистику, broken links, изолированные узлы.
+
+### Экспорт
+```bash
+ontology export --format csv --output systemic_career_v2.4.csv
+ontology export --format xlsx --output systemic_career_v2.4.xlsx
+```
+Экспортирует в CSV или XLSX с вкладками.
+
+### Граф связей
+```bash
+ontology graph --output visuals/ontology.mmd
+```
+Создаёт Mermaid диаграмму связей между понятиями.
+
+## Workflow
+
+### Сценарий 1: Начало работы
+```bash
+# 1. Инициализация онтологии
+ontology init --project "My Project"
+
+# 2. Добавление понятий
+ontology add "Понятие 1"
+ontology add "Понятие 2"
+ontology add "Понятие 3"
+
+# 3. Проверка
+ontology list
+ontology audit
+
+# 4. Экспорт
+ontology export --format csv
+```
+
+### Сценарий 2: Работа с существующей онтологией
+```bash
+# 1. Просмотр текущих понятий
+ontology list
+
+# 2. Проверка качества
+ontology audit
+
+# 3. Экспорт для анализа
+ontology export --format xlsx
+```
+
+### Сценарий 3: Визуализация
+```bash
+# Создать граф связей
+ontology graph
+
+# Конвертировать в PNG (если установлен mmdc)
+mmdc -i visuals/ontology.mmd -o visuals/ontology.png
+```
+
+## Структура файлов
+
+### Формат понятия (.md)
+```markdown
+---
+id: C_1
+name: Агентность
+status: draft
+meta_meta: Характеристика
+relations:
+  - type: enables
+    target: C_22
+    description: Позволяет создать личный контракт
+created: 2025-10-02T10:00:00
+updated: 2025-10-02T12:00:00
+---
+
+# Агентность
+
+## Definition
+Характеристика личности, выражающаяся в желании...
+
+## Purpose
+Позволяет человеку брать на себя ответственность...
+
+## Examples
+- Самостоятельное планирование недели
+- Инициирование проектов
+```
+
+### Статусы понятий
+- `draft` — черновик (только название)
+- `draft+filled` — заполнено, не проверено
+- `approved` — проверено и утверждено
+
+### Типы связей
+- `requires` — требует (зависимость)
+- `enables` — позволяет (результат)
+- `relates_to` — связано с
+- `part_of` — часть целого
+- `instance_of` — экземпляр
+- `opposite_of` — противоположно
+- `similar_to` — похоже на
+
+## Когда использовать Ontology Toolkit
+
+### Используй, когда:
+- Нужно добавить новое понятие в онтологию
+- Нужно проверить качество онтологии
+- Нужно экспортировать понятия в CSV/XLSX
+- Нужно визуализировать связи между понятиями
+- Пользователь просит "добавить понятие" или "проверить онтологию"
+
+### Примеры запросов:
+- "Добавь понятие Стратегирование в онтологию"
+  → `ontology add "Стратегирование"`
+
+- "Покажи список всех понятий"
+  → `ontology list`
+
+- "Проверь онтологию на broken links"
+  → `ontology audit`
+
+- "Экспортируй понятия в Excel"
+  → `ontology export --format xlsx`
+
+- "Создай граф связей"
+  → `ontology graph`
+
+## Python API (альтернатива CLI)
+
+```python
+from pathlib import Path
+from ontology_toolkit.core.ontology import Ontology
+from ontology_toolkit.core.schema import MetaMetaType
+
+# Открыть онтологию
+onto = Ontology(Path(".ontology"))
+onto.load_all()
+
+# Добавить понятие
+concept = onto.add_concept("Новое понятие")
+concept.definition = "Определение..."
+concept.purpose = "Назначение..."
+concept.meta_meta = MetaMetaType.CONCEPT
+concept.mark_filled()
+onto.save_concept(concept)
+
+# Проверить онтологию
+onto.print_audit()
+```
+
+## Установка
+
+```bash
+cd ontology_toolkit
+pip install -e .
+```
+
+После установки команда `ontology` доступна глобально.
+
+## Версия
+
+v0.2.0 — CLI MVP (init, add, list, audit, export, graph)
+
+## Планируется (v0.3.0)
+
+- AI-автозаполнение: `ontology fill --id C_1`
+- Извлечение понятий из текста: `ontology extract --from file.md`
+

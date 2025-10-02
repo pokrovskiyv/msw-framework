@@ -30,6 +30,43 @@ build/
 dist/
 coverage/
 
+# Python - tooling caches
+.tox/
+.nox/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.pyre/
+
+# Python - coverage
+.coverage
+.coverage.*
+htmlcov/
+
+# Python - packaging
+.eggs/
+pip-wheel-metadata/
+
+# Environments
+.python-version
+.envrc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node - caches
+.pnpm-store/
+.parcel-cache/
+
+# Docs (Sphinx)
+docs/_build/
+
+# Personal contracts and private data
+personal_contracts/
+*.personal.md
+my_contract_*.md
+
 # Others
 .DS_Store
 *.bak
