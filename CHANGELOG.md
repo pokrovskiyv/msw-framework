@@ -16,6 +16,164 @@
 
 ---
 
+## [1.0.0] - 2025-10-05
+
+**🚨 Мажорные изменения:** 47 файлов
+
+### Added (Добавлено)
+- ✅ **weeks/Week_01_Foundation.md** — детальная программа Week_01_Foundation
+- ✅ **weeks/Week_01_Foundation_v2.md** — детальная программа Week_01_Foundation_v2
+- ✅ **weeks/Week_02_Direction.md** — детальная программа Week_02_Direction
+- ✅ **weeks/Week_02_Direction_Analysis.md** — детальная программа Week_02_Direction_Analysis
+- ✅ **weeks/Week_03_Value.md** — детальная программа Week_03_Value
+- ✅ **weeks/Week_04_Rhythm.md** — детальная программа Week_04_Rhythm
+- ✅ **weeks/Week_05_Context.md** — детальная программа Week_05_Context
+- ✅ **weeks/Week_06_Mastery.md** — детальная программа Week_06_Mastery
+- ✅ **weeks/Week_07_Communication.md** — детальная программа Week_07_Communication
+- ✅ **weeks/Week_08_Resilience.md** — детальная программа Week_08_Resilience
+- ✅ **weeks/Week_01_Foundation.md** — детальная программа Week_01_Foundation
+- ✅ **weeks/Week_01_Foundation_v2.md** — детальная программа Week_01_Foundation_v2
+- ✅ **weeks/Week_02_Direction.md** — детальная программа Week_02_Direction
+- ✅ **weeks/Week_03_Value.md** — детальная программа Week_03_Value
+- ✅ **weeks/Week_04_Rhythm.md** — детальная программа Week_04_Rhythm
+- ✅ **weeks/Week_05_Context.md** — детальная программа Week_05_Context
+- ✅ **weeks/Week_06_Mastery.md** — детальная программа Week_06_Mastery
+- ✅ **weeks/Week_07_Communication.md** — детальная программа Week_07_Communication
+- ✅ **ontology_toolkit/prompts_templates/CHANGELOG_template.md** — шаблон CHANGELOG_template
+- ✅ **ontology_toolkit/prompts_templates/concept_fill.md** — шаблон concept_fill
+- ✅ **ontology_toolkit/prompts_templates/context_extract.md** — шаблон context_extract
+- ✅ **ontology_toolkit/prompts_templates/meta_meta_rules.md** — шаблон meta_meta_rules
+- ✅ **ontology_toolkit/prompts_templates/ontology_README_template.md** — шаблон ontology_README_template
+- ✅ **ontology_toolkit/prompts_templates/ontology_project_template.yaml** — шаблон ontology_project_template
+- ✅ **ontology_toolkit/prompts_templates/project_context_template.yaml** — шаблон project_context_template
+- ✅ **templates/Personal_Contract_v1.0_Week1_Template.md** — шаблон Personal_Contract_v1.0_Week1_Template
+- ✅ **templates/Week_05_Contacts_CRM.md** — шаблон Week_05_Contacts_CRM
+- ✅ **templates/Week_05_Environment_Map.md** — шаблон Week_05_Environment_Map
+- ✅ **templates/Week_05_Media_Diet.md** — шаблон Week_05_Media_Diet
+- ✅ **templates/Week_08_Energy_Budget.md** — шаблон Week_08_Energy_Budget
+- ✅ **templates/Week_08_Recovery_Reglament.md** — шаблон Week_08_Recovery_Reglament
+- ✅ **templates/Week_05_Contacts_CRM.md** — шаблон Week_05_Contacts_CRM
+- ✅ **templates/Week_05_Environment_Map.md** — шаблон Week_05_Environment_Map
+- ✅ **templates/Week_05_Media_Diet.md** — шаблон Week_05_Media_Diet
+- ✅ **course_cli/README.md** — обновление CLI инструмента
+- ✅ **course_cli/__init__.py** — обновление CLI инструмента
+- ✅ **course_cli/main.py** — обновление CLI инструмента
+- ✅ **course_cli/pyproject.toml** — обновление CLI инструмента
+- ✅ **course_cli/README.md** — обновление CLI инструмента
+- ✅ **course_cli/pyproject.toml** — обновление CLI инструмента
+- ✅ **Personal_Contract_v4.0_Template.md** — обновление шаблона контракта
+- ✅ **Personal_Contract_v4.0_Template.md** — обновление шаблона контракта
+- ✅ **Systemic_Career_Framework_v2.md** — обновление концептуального фреймворка
+- ✅ **Systemic_Career_Framework_v2.md** — обновление концептуального фреймворка
+- ✅ **ASSESSMENT.md** — обновление документации
+- ✅ **AUTOMATION_IMPLEMENTATION.md** — обновление документации
+- ✅ **AUTOMATION_SUMMARY.md** — обновление документации
+- ✅ **CHANGELOG.md** — обновление документации
+- ✅ **CURSOR_SETUP.md** — обновление документации
+- ✅ **Example_Contract.md** — обновление документации
+- ✅ **Glossary.md** — обновление документации
+- ✅ **How_to_fill_contract.md** — обновление документации
+- ✅ **Personal Contract v3.2.md** — обновление документации
+- ✅ **QUICK_START_CLI.md** — обновление документации
+- ✅ **README.md** — обновление документации
+- ✅ **SelfDevelopment.md** — обновление документации
+- ✅ **System_Career_Materials_06092025.md** — обновление документации
+- ✅ **ASSESSMENT.md** — обновление документации
+- ✅ **CHANGELOG.md** — обновление документации
+- ✅ **Glossary.md** — обновление документации
+- ✅ **How_to_fill_contract.md** — обновление документации
+- ✅ **QUICK_START_CLI.md** — обновление документации
+- ✅ **README.md** — обновление документации
+- ✅ **".ontology/concepts/C_9_r\321\236ss\321\222rsr\302\265r\321\226ryos\321\222r\321\225r\321\226rr\321\225ryor\302\265.md"**
+- ✅ **"First Principles Framework \342\200\224 Core Conceptual Specification (holonic).md"**
+- ✅ **"\320\241\321\202\321\200\321\203\320\272\321\202\321\203\321\200\320\260 \321\200\321\203\320\272\320\276\320\262\320\276\320\264\321\201\321\202\320\262\320\260 v2.1.md"**
+
+### Changed (Изменено)
+- 🔄 **weeks/Week_01_Foundation.md** — обновление программы недели
+- 🔄 **weeks/Week_01_Foundation_v2.md** — обновление программы недели
+- 🔄 **weeks/Week_02_Direction.md** — обновление программы недели
+- 🔄 **weeks/Week_02_Direction_Analysis.md** — обновление программы недели
+- 🔄 **weeks/Week_03_Value.md** — обновление программы недели
+- 🔄 **weeks/Week_04_Rhythm.md** — обновление программы недели
+- 🔄 **weeks/Week_05_Context.md** — обновление программы недели
+- 🔄 **weeks/Week_06_Mastery.md** — обновление программы недели
+- 🔄 **weeks/Week_07_Communication.md** — обновление программы недели
+- 🔄 **weeks/Week_08_Resilience.md** — обновление программы недели
+- 🔄 **weeks/Week_01_Foundation.md** — обновление программы недели
+- 🔄 **weeks/Week_01_Foundation_v2.md** — обновление программы недели
+- 🔄 **weeks/Week_02_Direction.md** — обновление программы недели
+- 🔄 **weeks/Week_03_Value.md** — обновление программы недели
+- 🔄 **weeks/Week_04_Rhythm.md** — обновление программы недели
+- 🔄 **weeks/Week_05_Context.md** — обновление программы недели
+- 🔄 **weeks/Week_06_Mastery.md** — обновление программы недели
+- 🔄 **weeks/Week_07_Communication.md** — обновление программы недели
+- 🔄 **ontology_toolkit/prompts_templates/CHANGELOG_template.md** — обновление шаблона
+- 🔄 **ontology_toolkit/prompts_templates/concept_fill.md** — обновление шаблона
+- 🔄 **ontology_toolkit/prompts_templates/context_extract.md** — обновление шаблона
+- 🔄 **ontology_toolkit/prompts_templates/meta_meta_rules.md** — обновление шаблона
+- 🔄 **ontology_toolkit/prompts_templates/ontology_README_template.md** — обновление шаблона
+- 🔄 **ontology_toolkit/prompts_templates/ontology_project_template.yaml** — обновление шаблона
+- 🔄 **ontology_toolkit/prompts_templates/project_context_template.yaml** — обновление шаблона
+- 🔄 **templates/Personal_Contract_v1.0_Week1_Template.md** — обновление шаблона
+- 🔄 **templates/Week_05_Contacts_CRM.md** — обновление шаблона
+- 🔄 **templates/Week_05_Environment_Map.md** — обновление шаблона
+- 🔄 **templates/Week_05_Media_Diet.md** — обновление шаблона
+- 🔄 **templates/Week_08_Energy_Budget.md** — обновление шаблона
+- 🔄 **templates/Week_08_Recovery_Reglament.md** — обновление шаблона
+- 🔄 **templates/Week_05_Contacts_CRM.md** — обновление шаблона
+- 🔄 **templates/Week_05_Environment_Map.md** — обновление шаблона
+- 🔄 **templates/Week_05_Media_Diet.md** — обновление шаблона
+- 🔄 **course_cli/README.md** — улучшение CLI инструмента
+- 🔄 **course_cli/__init__.py** — улучшение CLI инструмента
+- 🔄 **course_cli/main.py** — улучшение CLI инструмента
+- 🔄 **course_cli/pyproject.toml** — улучшение CLI инструмента
+- 🔄 **course_cli/README.md** — улучшение CLI инструмента
+- 🔄 **course_cli/pyproject.toml** — улучшение CLI инструмента
+- 🔄 **Personal_Contract_v4.0_Template.md** — доработка шаблона контракта
+- 🔄 **Personal_Contract_v4.0_Template.md** — доработка шаблона контракта
+- 🔄 **Systemic_Career_Framework_v2.md** — эволюция концептуального фреймворка
+- 🔄 **Systemic_Career_Framework_v2.md** — эволюция концептуального фреймворка
+- 🔄 **ASSESSMENT.md** — обновление документации
+- 🔄 **AUTOMATION_IMPLEMENTATION.md** — обновление документации
+- 🔄 **AUTOMATION_SUMMARY.md** — обновление документации
+- 🔄 **CHANGELOG.md** — обновление документации
+- 🔄 **CURSOR_SETUP.md** — обновление документации
+- 🔄 **Example_Contract.md** — обновление документации
+- 🔄 **Glossary.md** — обновление документации
+- 🔄 **How_to_fill_contract.md** — обновление документации
+- 🔄 **Personal Contract v3.2.md** — обновление документации
+- 🔄 **QUICK_START_CLI.md** — обновление документации
+- 🔄 **README.md** — обновление документации
+- 🔄 **SelfDevelopment.md** — обновление документации
+- 🔄 **System_Career_Materials_06092025.md** — обновление документации
+- 🔄 **ASSESSMENT.md** — обновление документации
+- 🔄 **CHANGELOG.md** — обновление документации
+- 🔄 **Glossary.md** — обновление документации
+- 🔄 **How_to_fill_contract.md** — обновление документации
+- 🔄 **QUICK_START_CLI.md** — обновление документации
+- 🔄 **README.md** — обновление документации
+- 🔄 **".ontology/concepts/C_9_r\321\236ss\321\222rsr\302\265r\321\226ryos\321\222r\321\225r\321\226rr\321\225ryor\302\265.md"**
+- 🔄 **"First Principles Framework \342\200\224 Core Conceptual Specification (holonic).md"**
+- 🔄 **"\320\241\321\202\321\200\321\203\320\272\321\202\321\203\321\200\320\260 \321\200\321\203\320\272\320\276\320\262\320\276\320\264\321\201\321\202\320\262\320\260 v2.1.md"**
+
+### Removed (Удалено)
+- 🗑️ **".ontology/concepts/C_9_r\321\236ss\321\222rsr\302\265r\321\226ryos\321\222r\321\225r\321\226rr\321\225ryor\302\265.md"**
+- 🗑️ **.ontology/concepts/C_3_agentnost.md**
+- 🗑️ **.ontology/concepts/C_6_tselepolaganie.md**
+- 🗑️ **.ontology/concepts/C_7_refleksiya.md**
+- 🗑️ **.ontology/concepts/C_8_testovoe_ponyatie.md**
+
+### Impact (Влияние)
+- Обновлены программы недель курса
+- Добавлены/обновлены шаблоны для участников
+- Улучшен CLI инструмент для работы с курсом
+- Эволюционировал шаблон личного контракта
+- Развит концептуальный фреймворк курса
+- Обновлена документация проекта
+
+---
+
+
 ## [0.7.1] - 2025-10-01
 
 ### Changed (Изменено)
