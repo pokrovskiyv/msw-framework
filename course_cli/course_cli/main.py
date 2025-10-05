@@ -11,6 +11,7 @@
 
 import sys
 import os
+import subprocess
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
@@ -333,7 +334,7 @@ def progress(
 
 @app.command(name="template")
 def template(
-    name: str = typer.Argument(..., help="Имя шаблона (или часть имени)"),
+    name: Optional[str] = typer.Argument(None, help="Имя шаблона (или часть имени)"),
     list_all: bool = typer.Option(False, "--list", "-l", help="Показать список всех шаблонов"),
     output: Optional[str] = typer.Option(None, "--output", "-o", help="Путь для сохранения"),
 ):
@@ -359,6 +360,11 @@ def template(
         console.print()
         console.print("[dim]💡 Используйте: course template <имя>[/dim]")
         return
+    
+    if not name:
+        console.print("[red]❌ Необходимо указать имя шаблона[/red]")
+        console.print("[dim]💡 Посмотрите список: course template --list[/dim]")
+        raise typer.Exit(code=1)
     
     # Ищем шаблон по имени
     templates = list(TEMPLATES_DIR.glob(f"*{name}*.md"))
@@ -405,6 +411,106 @@ def template(
         raise typer.Exit(code=1)
 
 
+@app.command(name="docs")
+def docs(
+    action: str = typer.Argument(..., help="Действие: check, update"),
+    strict: bool = typer.Option(False, "--strict", help="Строгий режим проверки"),
+    days: int = typer.Option(7, "--days", help="Количество дней для анализа изменений"),
+    no_interactive: bool = typer.Option(False, "--no-interactive", help="Неинтерактивный режим"),
+):
+    """
+    Управление документацией проекта.
+    
+    Actions:
+    - check: проверить синхронность документации
+    - update: обновить документацию интерактивно
+    """
+    scripts_dir = PROJECT_ROOT / "scripts"
+    
+    if action == "check":
+        console.print(f"\n[bold cyan]🔍 Проверка синхронности документации[/bold cyan]\n")
+        
+        # Формируем команду
+        cmd = [sys.executable, str(scripts_dir / "check_docs_sync.py")]
+        
+        if strict:
+            cmd.append("--strict")
+        
+        if days != 7:
+            cmd.extend(["--days", str(days)])
+        
+        try:
+            result = subprocess.run(
+                cmd,
+                cwd=PROJECT_ROOT,
+                capture_output=False,  # Показываем вывод в реальном времени
+                text=True
+            )
+            
+            if result.returncode == 0:
+                console.print(f"\n[green]✅ Документация синхронизирована[/green]")
+            elif result.returncode == 1:
+                console.print(f"\n[yellow]⚠️  Обнаружены предупреждения[/yellow]")
+                console.print(f"[dim]💡 Рекомендуется: course docs update[/dim]")
+            elif result.returncode == 2:
+                console.print(f"\n[red]❌ Обнаружены критические проблемы[/red]")
+                console.print(f"[dim]💡 Требуется: course docs update[/dim]")
+            else:
+                console.print(f"\n[red]❌ Ошибка проверки (exit code: {result.returncode})[/red]")
+            
+            return result.returncode
+        
+        except FileNotFoundError:
+            console.print(f"[red]❌ Скрипт check_docs_sync.py не найден в {scripts_dir}[/red]")
+            console.print(f"[dim]💡 Убедитесь, что вы находитесь в корне проекта[/dim]")
+            raise typer.Exit(code=1)
+        
+        except Exception as e:
+            console.print(f"[red]❌ Ошибка запуска проверки: {e}[/red]")
+            raise typer.Exit(code=1)
+    
+    elif action == "update":
+        console.print(f"\n[bold cyan]🔧 Обновление документации[/bold cyan]\n")
+        
+        # Формируем команду
+        cmd = [sys.executable, str(scripts_dir / "update_docs.py")]
+        
+        if days != 7:
+            cmd.extend(["--days", str(days)])
+        
+        if no_interactive:
+            cmd.append("--no-interactive")
+        
+        try:
+            result = subprocess.run(
+                cmd,
+                cwd=PROJECT_ROOT,
+                capture_output=False,  # Показываем вывод в реальном времени
+                text=True
+            )
+            
+            if result.returncode == 0:
+                console.print(f"\n[green]✅ Обновление документации завершено[/green]")
+            else:
+                console.print(f"\n[yellow]⚠️  Обновление завершено с предупреждениями[/yellow]")
+            
+            return result.returncode
+        
+        except FileNotFoundError:
+            console.print(f"[red]❌ Скрипт update_docs.py не найден в {scripts_dir}[/red]")
+            console.print(f"[dim]💡 Убедитесь, что вы находитесь в корне проекта[/dim]")
+            raise typer.Exit(code=1)
+        
+        except Exception as e:
+            console.print(f"[red]❌ Ошибка запуска обновления: {e}[/red]")
+            raise typer.Exit(code=1)
+    
+    else:
+        console.print(f"[red]❌ Неизвестное действие: {action}[/red]")
+        console.print(f"[dim]Доступные: check, update[/dim]")
+        raise typer.Exit(code=1)
+
+
 @app.command(name="info")
 def info():
     """
@@ -431,6 +537,8 @@ def info():
     console.print(f"  • [cyan]course contract init[/cyan] — создать контракт")
     console.print(f"  • [cyan]course progress[/cyan] — показать прогресс")
     console.print(f"  • [cyan]course template <name>[/cyan] — использовать шаблон")
+    console.print(f"  • [cyan]course docs check[/cyan] — проверить документацию")
+    console.print(f"  • [cyan]course docs update[/cyan] — обновить документацию")
     
     console.print(f"\n[dim]💡 Справка по команде: course <команда> --help[/dim]\n")
 

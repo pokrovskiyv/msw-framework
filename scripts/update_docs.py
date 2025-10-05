@@ -7,9 +7,10 @@
 
 import os
 import sys
+import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import subprocess
 import re
 
@@ -27,6 +28,80 @@ class Colors:
 def get_project_root() -> Path:
     """Определить корень проекта."""
     return Path(__file__).parent.parent
+
+def detect_major_changes(changes: Dict[str, List[str]]) -> Tuple[bool, List[str]]:
+    """
+    Детектировать мажорные изменения в проекте.
+    
+    Returns:
+        (has_major_changes, list_of_major_files)
+    """
+    # Паттерны мажорных изменений
+    major_patterns = [
+        'weeks/',
+        'templates/',
+        'course_cli/',
+        'Personal_Contract_',
+        'Systemic_Career_Framework_',
+        '.cursorrules',
+        'CURSOR_SETUP.md'
+    ]
+    
+    major_files = []
+    all_changed_files = changes['added'] + changes['modified'] + changes['deleted']
+    
+    for file_path in all_changed_files:
+        for pattern in major_patterns:
+            if pattern in file_path:
+                major_files.append(file_path)
+                break
+    
+    return len(major_files) > 0, major_files
+
+def categorize_changes(changes: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """
+    Категоризировать изменения по типам для лучшей генерации CHANGELOG.
+    
+    Returns:
+        {
+            'weeks': [...],
+            'templates': [...],
+            'cli': [...],
+            'contracts': [...],
+            'framework': [...],
+            'docs': [...],
+            'other': [...]
+        }
+    """
+    categorized = {
+        'weeks': [],
+        'templates': [],
+        'cli': [],
+        'contracts': [],
+        'framework': [],
+        'docs': [],
+        'other': []
+    }
+    
+    all_changed_files = changes['added'] + changes['modified'] + changes['deleted']
+    
+    for file_path in all_changed_files:
+        if 'weeks/' in file_path:
+            categorized['weeks'].append(file_path)
+        elif 'templates/' in file_path:
+            categorized['templates'].append(file_path)
+        elif 'course_cli/' in file_path:
+            categorized['cli'].append(file_path)
+        elif 'Personal_Contract_' in file_path:
+            categorized['contracts'].append(file_path)
+        elif 'Systemic_Career_Framework_' in file_path:
+            categorized['framework'].append(file_path)
+        elif file_path.endswith('.md') and '/' not in file_path:
+            categorized['docs'].append(file_path)
+        else:
+            categorized['other'].append(file_path)
+    
+    return categorized
 
 def get_git_changes(project_root: Path, days: int = 7) -> Dict[str, List[str]]:
     """
@@ -103,26 +178,37 @@ def suggest_next_version(current: str, changes: Dict[str, List[str]]) -> str:
     """
     major, minor, patch = map(int, current.split('.'))
     
-    # Анализируем масштаб изменений
-    total_changes = len(changes['added']) + len(changes['modified']) + len(changes['deleted'])
+    # Детектируем мажорные изменения
+    has_major, major_files = detect_major_changes(changes)
     
-    # Проверяем критичные изменения (новые недели, изменения в контрактах)
-    critical_files = ['Personal_Contract', 'Systemic_Career_Framework']
-    has_critical_changes = any(
-        any(cf in file for cf in critical_files)
-        for file in changes['modified'] + changes['deleted']
+    if not has_major:
+        # Если нет мажорных изменений, это patch
+        return f"{major}.{minor}.{patch + 1}"
+    
+    # Анализируем типы мажорных изменений
+    categorized = categorize_changes(changes)
+    
+    # Критические изменения (требуют MAJOR версии)
+    critical_changes = (
+        len(categorized['contracts']) > 0 or  # Изменения в контрактах
+        len(categorized['framework']) > 0 or  # Изменения в фреймворке
+        any('.cursorrules' in file for file in changes['modified'] + changes['deleted'])  # Изменения в .cursorrules
     )
     
-    # Проверяем новую функциональность (новые недели, новые шаблоны)
-    new_weeks = any('Week_' in file for file in changes['added'])
-    new_templates = any('templates/' in file for file in changes['added'])
-    has_new_features = new_weeks or new_templates or len(changes['added']) > 3
+    # Новая функциональность (требует MINOR версии)
+    new_features = (
+        len(categorized['weeks']) > 0 or      # Новые/изменённые недели
+        len(categorized['templates']) > 0 or  # Новые шаблоны
+        len(categorized['cli']) > 0 or        # Изменения в CLI
+        len(changes['added']) > 2             # Много новых файлов
+    )
     
-    if has_critical_changes:
+    if critical_changes:
         return f"{major + 1}.0.0"
-    elif has_new_features:
+    elif new_features:
         return f"{major}.{minor + 1}.0"
     else:
+        # Мажорные изменения, но не критические и не новые фичи
         return f"{major}.{minor}.{patch + 1}"
 
 def generate_changelog_entry(
@@ -136,32 +222,54 @@ def generate_changelog_entry(
     
     entry = f"## [{version}] - {date_str}\n\n"
     
-    # Группируем изменения по категориям
-    weeks_added = [f for f in changes['added'] if 'weeks/Week_' in f]
-    weeks_modified = [f for f in changes['modified'] if 'weeks/Week_' in f]
-    templates_added = [f for f in changes['added'] if 'templates/' in f]
-    templates_modified = [f for f in changes['modified'] if 'templates/' in f]
-    docs_modified = [f for f in changes['modified'] if f.endswith('.md') and '/' not in f]
+    # Категоризируем изменения
+    categorized = categorize_changes(changes)
+    has_major, major_files = detect_major_changes(changes)
+    
+    # Добавляем информацию о мажорных изменениях
+    if has_major:
+        entry += f"**🚨 Мажорные изменения:** {len(major_files)} файлов\n\n"
     
     # Added
     if changes['added']:
         entry += "### Added (Добавлено)\n"
         
-        if weeks_added:
-            for file in weeks_added:
+        # Недели
+        if categorized['weeks']:
+            for file in categorized['weeks']:
                 week_name = Path(file).stem
                 entry += f"- ✅ **{file}** — детальная программа {week_name}\n"
         
-        if templates_added:
-            for file in templates_added:
+        # Шаблоны
+        if categorized['templates']:
+            for file in categorized['templates']:
                 template_name = Path(file).stem
                 entry += f"- ✅ **{file}** — шаблон {template_name}\n"
         
+        # CLI изменения
+        if categorized['cli']:
+            for file in categorized['cli']:
+                entry += f"- ✅ **{file}** — обновление CLI инструмента\n"
+        
+        # Контракты
+        if categorized['contracts']:
+            for file in categorized['contracts']:
+                entry += f"- ✅ **{file}** — обновление шаблона контракта\n"
+        
+        # Фреймворк
+        if categorized['framework']:
+            for file in categorized['framework']:
+                entry += f"- ✅ **{file}** — обновление концептуального фреймворка\n"
+        
+        # Документация
+        if categorized['docs']:
+            for file in categorized['docs']:
+                entry += f"- ✅ **{file}** — обновление документации\n"
+        
         # Остальные файлы
-        other_added = [f for f in changes['added'] 
-                      if f not in weeks_added and f not in templates_added]
-        for file in other_added[:5]:  # Ограничиваем 5 файлами
-            entry += f"- ✅ **{file}**\n"
+        if categorized['other']:
+            for file in categorized['other'][:3]:  # Ограничиваем 3 файлами
+                entry += f"- ✅ **{file}**\n"
         
         entry += "\n"
     
@@ -169,17 +277,40 @@ def generate_changelog_entry(
     if changes['modified']:
         entry += "### Changed (Изменено)\n"
         
-        if weeks_modified:
-            for file in weeks_modified:
+        # Недели
+        if categorized['weeks']:
+            for file in categorized['weeks']:
                 entry += f"- 🔄 **{file}** — обновление программы недели\n"
         
-        if templates_modified:
-            for file in templates_modified:
+        # Шаблоны
+        if categorized['templates']:
+            for file in categorized['templates']:
                 entry += f"- 🔄 **{file}** — обновление шаблона\n"
         
-        if docs_modified:
-            for file in docs_modified:
+        # CLI изменения
+        if categorized['cli']:
+            for file in categorized['cli']:
+                entry += f"- 🔄 **{file}** — улучшение CLI инструмента\n"
+        
+        # Контракты
+        if categorized['contracts']:
+            for file in categorized['contracts']:
+                entry += f"- 🔄 **{file}** — доработка шаблона контракта\n"
+        
+        # Фреймворк
+        if categorized['framework']:
+            for file in categorized['framework']:
+                entry += f"- 🔄 **{file}** — эволюция концептуального фреймворка\n"
+        
+        # Документация
+        if categorized['docs']:
+            for file in categorized['docs']:
                 entry += f"- 🔄 **{file}** — обновление документации\n"
+        
+        # Остальные файлы
+        if categorized['other']:
+            for file in categorized['other'][:3]:  # Ограничиваем 3 файлами
+                entry += f"- 🔄 **{file}**\n"
         
         entry += "\n"
     
@@ -190,10 +321,30 @@ def generate_changelog_entry(
             entry += f"- 🗑️ **{file}**\n"
         entry += "\n"
     
+    # Impact - генерируем автоматически на основе типов изменений
     entry += "### Impact (Влияние)\n"
-    entry += "- [Опишите влияние изменений на пользователей/участников курса]\n\n"
     
-    entry += "---\n\n"
+    impact_items = []
+    if categorized['weeks']:
+        impact_items.append("- Обновлены программы недель курса")
+    if categorized['templates']:
+        impact_items.append("- Добавлены/обновлены шаблоны для участников")
+    if categorized['cli']:
+        impact_items.append("- Улучшен CLI инструмент для работы с курсом")
+    if categorized['contracts']:
+        impact_items.append("- Эволюционировал шаблон личного контракта")
+    if categorized['framework']:
+        impact_items.append("- Развит концептуальный фреймворк курса")
+    if categorized['docs']:
+        impact_items.append("- Обновлена документация проекта")
+    
+    if impact_items:
+        for item in impact_items:
+            entry += f"{item}\n"
+    else:
+        entry += "- [Опишите влияние изменений на пользователей/участников курса]\n"
+    
+    entry += "\n---\n\n"
     
     return entry
 
@@ -310,26 +461,80 @@ def check_readme_needs_update(project_root: Path, changes: Dict[str, List[str]])
     print(f"\n{Colors.BOLD}{Colors.HEADER}📖 Проверка README.md{Colors.ENDC}\n")
     
     needs_update = False
+    categorized = categorize_changes(changes)
     
     # Новые недели → нужно добавить ссылки
-    new_weeks = [f for f in changes['added'] if 'weeks/Week_' in f]
-    if new_weeks:
-        print(f"{Colors.WARNING}⚠️  Добавлено недель: {len(new_weeks)}{Colors.ENDC}")
+    if categorized['weeks']:
+        print(f"{Colors.WARNING}⚠️  Изменено недель: {len(categorized['weeks'])}{Colors.ENDC}")
         print(f"{Colors.OKCYAN}   Проверьте, что в README есть ссылки на эти недели{Colors.ENDC}")
         needs_update = True
     
     # Новые шаблоны → нужно добавить упоминание
-    new_templates = [f for f in changes['added'] if 'templates/' in f]
-    if new_templates:
-        print(f"{Colors.WARNING}⚠️  Добавлено шаблонов: {len(new_templates)}{Colors.ENDC}")
+    if categorized['templates']:
+        print(f"{Colors.WARNING}⚠️  Изменено шаблонов: {len(categorized['templates'])}{Colors.ENDC}")
         print(f"{Colors.OKCYAN}   Проверьте раздел 'Шаблоны' в README{Colors.ENDC}")
+        needs_update = True
+    
+    # CLI изменения → нужно обновить раздел CLI
+    if categorized['cli']:
+        print(f"{Colors.WARNING}⚠️  Изменён CLI: {len(categorized['cli'])} файлов{Colors.ENDC}")
+        print(f"{Colors.OKCYAN}   Проверьте раздел 'Инструменты для работы с курсом' в README{Colors.ENDC}")
         needs_update = True
     
     if not needs_update:
         print(f"{Colors.OKGREEN}✅ README не требует обновления{Colors.ENDC}")
 
+def check_cursor_setup_needs_update(project_root: Path, changes: Dict[str, List[str]]):
+    """Проверить, нужно ли обновить CURSOR_SETUP.md."""
+    print(f"\n{Colors.BOLD}{Colors.HEADER}🎯 Проверка CURSOR_SETUP.md{Colors.ENDC}\n")
+    
+    needs_update = False
+    
+    # Изменения в .cursorrules
+    cursorrules_changed = any('.cursorrules' in file for file in changes['modified'] + changes['deleted'])
+    if cursorrules_changed:
+        print(f"{Colors.WARNING}⚠️  Изменён .cursorrules{Colors.ENDC}")
+        print(f"{Colors.OKCYAN}   Обновите CURSOR_SETUP.md с новыми правилами{Colors.ENDC}")
+        needs_update = True
+    
+    # Изменения в CLI
+    cli_changed = any('course_cli/' in file for file in changes['modified'] + changes['added'])
+    if cli_changed:
+        print(f"{Colors.WARNING}⚠️  Изменён CLI инструмент{Colors.ENDC}")
+        print(f"{Colors.OKCYAN}   Проверьте инструкции по установке CLI в CURSOR_SETUP.md{Colors.ENDC}")
+        needs_update = True
+    
+    if not needs_update:
+        print(f"{Colors.OKGREEN}✅ CURSOR_SETUP.md не требует обновления{Colors.ENDC}")
+
 def main():
     """Основная функция."""
+    parser = argparse.ArgumentParser(
+        description="Помощник для обновления документации проекта Системная карьера",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Примеры использования:
+  python scripts/update_docs.py
+  python scripts/update_docs.py --days 14
+  python scripts/update_docs.py --no-interactive
+        """
+    )
+    
+    parser.add_argument(
+        '--days',
+        type=int,
+        default=7,
+        help='Количество дней для анализа изменений (по умолчанию: 7)'
+    )
+    
+    parser.add_argument(
+        '--no-interactive',
+        action='store_true',
+        help='Неинтерактивный режим (только анализ, без обновления CHANGELOG)'
+    )
+    
+    args = parser.parse_args()
+    
     project_root = get_project_root()
     
     print(f"\n{Colors.BOLD}{'='*70}{Colors.ENDC}")
@@ -337,8 +542,8 @@ def main():
     print(f"{Colors.BOLD}{'='*70}{Colors.ENDC}")
     
     # Получаем изменения из git
-    print(f"\n{Colors.OKCYAN}📊 Анализ изменений за последние 7 дней...{Colors.ENDC}\n")
-    changes = get_git_changes(project_root, days=7)
+    print(f"\n{Colors.OKCYAN}📊 Анализ изменений за последние {args.days} дней...{Colors.ENDC}\n")
+    changes = get_git_changes(project_root, days=args.days)
     
     total = len(changes['added']) + len(changes['modified']) + len(changes['deleted'])
     
@@ -352,14 +557,27 @@ def main():
     print(f"  • Изменено: {len(changes['modified'])}")
     print(f"  • Удалено: {len(changes['deleted'])}")
     
-    # Обновление CHANGELOG
-    update_changelog_interactive(project_root, changes)
+    # Проверяем мажорные изменения
+    has_major, major_files = detect_major_changes(changes)
+    if has_major:
+        print(f"\n{Colors.WARNING}🚨 Обнаружены мажорные изменения: {len(major_files)} файлов{Colors.ENDC}")
+        for file in major_files[:5]:  # Показываем первые 5
+            print(f"  • {file}")
+        if len(major_files) > 5:
+            print(f"  • ... и ещё {len(major_files) - 5} файлов")
+    
+    # Обновление CHANGELOG (только в интерактивном режиме)
+    if not args.no_interactive:
+        update_changelog_interactive(project_root, changes)
     
     # Рекомендации по ASSESSMENT
     suggest_assessment_updates(project_root, changes)
     
     # Проверка README
     check_readme_needs_update(project_root, changes)
+    
+    # Проверка CURSOR_SETUP.md
+    check_cursor_setup_needs_update(project_root, changes)
     
     print(f"\n{Colors.BOLD}{'='*70}{Colors.ENDC}")
     print(f"{Colors.OKGREEN}✅ Готово!{Colors.ENDC}\n")

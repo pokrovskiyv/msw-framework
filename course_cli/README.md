@@ -89,7 +89,23 @@ course template Week_08_Energy
 course template Week_05_Contacts --output ~/my_contacts.md
 ```
 
-### 5. Информация о курсе
+### 5. Управление документацией
+
+```bash
+# Проверить синхронность документации
+course docs check
+
+# Обновить документацию интерактивно
+course docs update
+
+# Строгий режим проверки
+course docs check --strict
+
+# Анализ изменений за 14 дней
+course docs check --days 14
+```
+
+### 6. Информация о курсе
 
 ```bash
 # Общая информация
@@ -118,6 +134,18 @@ Cursor выполняет: course contract init --week 1
 Вы: Покажи мой прогресс по курсу
 ↓
 Cursor выполняет: course progress
+```
+
+```
+Вы: Проверь документацию
+↓
+Cursor выполняет: course docs check
+```
+
+```
+Вы: Обнови документацию
+↓
+Cursor выполняет: course docs update
 ```
 
 ## Структура проекта

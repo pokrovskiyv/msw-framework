@@ -40,6 +40,7 @@ dev = [
 [project.scripts]
 course = "course_cli.main:app"
 
-[tool.setuptools]
-packages = ["course_cli"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["course_cli*"]
 
