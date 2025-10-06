@@ -43,10 +43,10 @@
 ### 🛠️ Разработчик
 | Материал | Описание | Размер |
 |----------|----------|--------|
-| [DEVELOPMENT_METHODOLOGY.md](DEVELOPMENT_METHODOLOGY.md) | Методология разработки курса | 50KB |
-| [ASSESSMENT.md](ASSESSMENT.md) | Оценка готовности фреймворка | 23KB |
-| [tasks.json](tasks.json) | Задачи разработки | 31KB |
-| [CHANGELOG.md](CHANGELOG.md) | История изменений | 45KB |
+| [DEVELOPMENT_METHODOLOGY.md](../development/DEVELOPMENT_METHODOLOGY.md) | Методология разработки курса | 50KB |
+| [ASSESSMENT.md](../system/ASSESSMENT.md) | Оценка готовности фреймворка | 23KB |
+| [tasks.json](../system/tasks.json) | Задачи разработки | 31KB |
+| [CHANGELOG.md](../system/CHANGELOG.md) | История изменений | 45KB |
 | [course_cli/](course_cli/) | CLI инструмент | - |
 | [ontology_toolkit/](ontology_toolkit/) | Инструмент для работы с онтологией | - |
 | [scripts/](scripts/) | Скрипты автоматизации | - |
@@ -55,11 +55,11 @@
 ### 📚 Исследователь
 | Материал | Описание | Размер |
 |----------|----------|--------|
-| [Systemic_Career_Framework_v2.md](Systemic_Career_Framework_v2.md) | Основной фреймворк | 47KB |
-| [Glossary.md](Glossary.md) | Глоссарий понятий | 33KB |
-| [OtherMaterials/](OtherMaterials/) | Архивные материалы | - |
-| [visuals/](visuals/) | Диаграммы и визуализации | - |
-| [.ontology/](.ontology/) | Онтологические данные | - |
+| [Systemic_Career_Framework_v2.md](../Systemic_Career_Framework_v2.md) | Основной фреймворк | 47KB |
+| [Glossary.md](../development/Glossary.md) | Глоссарий понятий | 33KB |
+| [OtherMaterials/](../OtherMaterials/) | Архивные материалы | - |
+| [visuals/](../visuals/) | Диаграммы и визуализации | - |
+| [.ontology/](../.ontology/) | Онтологические данные | - |
 
 ---
 

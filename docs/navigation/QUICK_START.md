@@ -40,13 +40,13 @@
 **Хочу развивать и поддерживать курс**
 
 **🚀 Начните здесь:**
-1. **[DEVELOPMENT_METHODOLOGY.md](DEVELOPMENT_METHODOLOGY.md)** — методология
-2. **[ASSESSMENT.md](ASSESSMENT.md)** — оценка готовности
-3. **[tasks.json](tasks.json)** — задачи разработки
+1. **[DEVELOPMENT_METHODOLOGY.md](../development/DEVELOPMENT_METHODOLOGY.md)** — методология
+2. **[ASSESSMENT.md](../system/ASSESSMENT.md)** — оценка готовности
+3. **[tasks.json](../system/tasks.json)** — задачи разработки
 
 **📚 Дополнительно:**
-- **[course_cli/](course_cli/)** — CLI инструмент
-- **[ontology_toolkit/](ontology_toolkit/)** — инструмент для онтологии
+- **[course_cli/](../course_cli/)** — CLI инструмент
+- **[ontology_toolkit/](../ontology_toolkit/)** — инструмент для онтологии
 
 ---
 
@@ -54,13 +54,13 @@
 **Хочу изучить методологию и подходы**
 
 **🚀 Начните здесь:**
-1. **[Systemic_Career_Framework_v2.md](Systemic_Career_Framework_v2.md)** — основной фреймворк
-2. **[Glossary.md](Glossary.md)** — глоссарий понятий
-3. **[OtherMaterials/](OtherMaterials/)** — архивные материалы
+1. **[Systemic_Career_Framework_v2.md](../Systemic_Career_Framework_v2.md)** — основной фреймворк
+2. **[Glossary.md](../development/Glossary.md)** — глоссарий понятий
+3. **[OtherMaterials/](../OtherMaterials/)** — архивные материалы
 
 **📚 Дополнительно:**
-- **[DEVELOPMENT_METHODOLOGY.md](DEVELOPMENT_METHODOLOGY.md)** — методология разработки
-- **[visuals/](visuals/)** — диаграммы и визуализации
+- **[DEVELOPMENT_METHODOLOGY.md](../development/DEVELOPMENT_METHODOLOGY.md)** — методология разработки
+- **[visuals/](../visuals/)** — диаграммы и визуализации
 
 ---
 
@@ -68,7 +68,7 @@
 
 - **[NAVIGATION_GUIDE.md](NAVIGATION_GUIDE.md)** — структурированная навигация по ролям
 - **[INDEX.md](INDEX.md)** — индекс всех материалов с размерами файлов
-- **[README.md](README.md)** — главная страница проекта
+- **[README.md](../README.md)** — главная страница проекта
 
 ---
 

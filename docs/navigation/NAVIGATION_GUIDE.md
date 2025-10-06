@@ -90,9 +90,9 @@
 
 ### 📚 Основные документы
 - **Фреймворк:** `Systemic_Career_Framework_v2.md`
-- **Методология:** `DEVELOPMENT_METHODOLOGY.md`
-- **Оценка:** `ASSESSMENT.md`
-- **Задачи:** `tasks.json`
+- **Методология:** `docs/development/DEVELOPMENT_METHODOLOGY.md`
+- **Оценка:** `docs/system/ASSESSMENT.md`
+- **Задачи:** `docs/system/tasks.json`
 
 ### 🛠️ Инструменты разработки
 - **CLI:** `course_cli/` — инструмент для участников
@@ -105,14 +105,14 @@
 - **Проверка документации:** `scripts/check_docs_sync.py`
 
 ### 📈 Мониторинг
-- **Изменения:** `CHANGELOG.md`
-- **Оценка качества:** `ASSESSMENT.md`
-- **Задачи:** `tasks.json`
+- **Изменения:** `docs/system/CHANGELOG.md`
+- **Оценка качества:** `docs/system/ASSESSMENT.md`
+- **Задачи:** `docs/system/tasks.json`
 
 ### 🔧 Конфигурация
 - **Cursor:** `.cursorrules`
 - **Git:** `.gitignore`
-- **Настройка:** `CURSOR_SETUP.md`
+- **Настройка:** `docs/development/CURSOR_SETUP.md`
 
 ---
 
@@ -120,8 +120,8 @@
 
 ### 📖 Теоретические основы
 - **Фреймворк:** `Systemic_Career_Framework_v2.md`
-- **Методология:** `DEVELOPMENT_METHODOLOGY.md`
-- **Глоссарий:** `Glossary.md`
+- **Методология:** `docs/development/DEVELOPMENT_METHODOLOGY.md`
+- **Глоссарий:** `docs/development/Glossary.md`
 
 ### 🔬 Исследовательские материалы
 - **Архив:** `OtherMaterials/`
@@ -135,9 +135,9 @@
 - **Визуализация:** `visuals/`
 
 ### 📈 Анализ и оценка
-- **Оценка фреймворка:** `ASSESSMENT.md`
+- **Оценка фреймворка:** `docs/system/ASSESSMENT.md`
 - **Метрики:** `Metrics_Framework.md`
-- **Задачи:** `tasks.json`
+- **Задачи:** `docs/system/tasks.json`
 
 ---
 
