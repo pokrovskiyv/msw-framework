@@ -66,6 +66,10 @@ docs/_build/
 personal_contracts/
 *.personal.md
 my_contract_*.md
+*_week*.md
+strategy_*.md
+ethical_filters.md
+Week_*_Energy_Budget_*.md
 
 # Others
 .DS_Store
