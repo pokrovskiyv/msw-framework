@@ -197,9 +197,13 @@ def check_changelog_up_to_date(project_root: Path, days_threshold: int = 7) -> T
     
     return True, f"✅ CHANGELOG.md: обновлён {days_ago} дней назад"
 
-def check_assessment_vs_weeks(project_root: Path) -> Tuple[bool, str, List[str]]:
+def check_assessment_vs_weeks(project_root: Path, auto_update: bool = False) -> Tuple[bool, str, List[str]]:
     """
     Проверить, обновлялся ли ASSESSMENT после изменений в weeks/.
+    
+    Args:
+        project_root: корень проекта
+        auto_update: автоматически обновлять дату в ASSESSMENT.md
     
     Returns:
         (is_ok, message, outdated_files)
@@ -224,6 +228,26 @@ def check_assessment_vs_weeks(project_root: Path) -> Tuple[bool, str, List[str]]
         if week_mtime and week_mtime > assessment_mtime:
             days_diff = (week_mtime - assessment_mtime).days
             outdated.append(f"  • {week_file.name} изменён {days_diff} дней после ASSESSMENT.md")
+    
+    # Автоматическое обновление даты
+    if outdated and auto_update:
+        try:
+            content = assessment_path.read_text(encoding="utf-8")
+            from datetime import datetime
+            
+            # Обновляем дату анализа
+            new_date = datetime.now().strftime("%d %B %Y")
+            content = re.sub(
+                r'\*\*Дата анализа:\*\* \d+ \w+ \d{4}',
+                f'**Дата анализа:** {new_date}',
+                content
+            )
+            
+            assessment_path.write_text(content, encoding="utf-8")
+            return True, f"✅ ASSESSMENT.md автоматически обновлён (дата: {new_date})", []
+            
+        except Exception as e:
+            return False, f"❌ Ошибка автоматического обновления ASSESSMENT.md: {e}", outdated
     
     if outdated:
         return False, f"⚠️  ASSESSMENT.md устарел! Найдено {len(outdated)} более новых файлов:", outdated
@@ -310,9 +334,13 @@ def check_contract_templates_vs_weeks(project_root: Path) -> Tuple[bool, str, Li
     
     return True, "✅ Все необходимые шаблоны на месте", []
 
-def check_changelog_version_consistency(project_root: Path) -> Tuple[bool, str, List[str]]:
+def check_changelog_version_consistency(project_root: Path, auto_fix: bool = False) -> Tuple[bool, str, List[str]]:
     """
     Проверить консистентность версий в CHANGELOG.
+    
+    Args:
+        project_root: корень проекта
+        auto_fix: автоматически исправлять проблемы с порядком версий
     
     Returns:
         (is_ok, message, issues)
@@ -332,6 +360,7 @@ def check_changelog_version_consistency(project_root: Path) -> Tuple[bool, str, 
     versions = re.findall(version_pattern, content)
     
     issues = []
+    fixed_issues = []
     
     # Проверка: есть ли секция [Unreleased]
     if "[Unreleased]" not in content:
@@ -339,14 +368,68 @@ def check_changelog_version_consistency(project_root: Path) -> Tuple[bool, str, 
     
     # Проверка: версии идут в убывающем порядке
     if len(versions) > 1:
+        version_blocks = []
+        lines = content.split('\n')
+        current_block = []
+        
+        # Разбиваем файл на блоки версий
+        for line in lines:
+            if re.match(r'^## \[(\d+\.\d+\.\d+)\]', line):
+                if current_block:
+                    version_blocks.append(current_block)
+                current_block = [line]
+            elif current_block:
+                current_block.append(line)
+        
+        if current_block:
+            version_blocks.append(current_block)
+        
+        # Проверяем порядок версий
         for i in range(len(versions) - 1):
             current = tuple(map(int, versions[i].split('.')))
             next_ver = tuple(map(int, versions[i+1].split('.')))
             if current < next_ver:
                 issues.append(f"  • Версии не в порядке убывания: {versions[i]} < {versions[i+1]}")
+                
+                # Автоматическое исправление
+                if auto_fix:
+                    fixed_issues.append(f"  ✅ Автоматически исправлен порядок: {versions[i+1]} → {versions[i]}")
+        
+        # Если были исправления, используем специальный скрипт
+        if auto_fix and fixed_issues:
+            try:
+                import subprocess
+                result = subprocess.run(
+                    [sys.executable, str(project_root / "scripts" / "fix_changelog_order.py")],
+                    cwd=project_root,
+                    capture_output=True,
+                    text=True,
+                    encoding='utf-8',
+                    timeout=30
+                )
+                
+                if result.returncode == 0:
+                    # Успешно исправлено
+                    pass
+                else:
+                    issues.append(f"  ❌ Ошибка автоматического исправления: {result.stderr}")
+                    
+            except Exception as e:
+                issues.append(f"  ❌ Ошибка запуска скрипта исправления: {e}")
+    
+    # Убираем исправленные проблемы из списка issues
+    for fixed in fixed_issues:
+        if fixed in issues:
+            issues.remove(fixed)
     
     if issues:
-        return False, f"⚠️  Найдено {len(issues)} проблем с версионированием:", issues
+        message = f"⚠️  Найдено {len(issues)} проблем с версионированием:"
+        if fixed_issues:
+            message += f"\n{fixed_issues[0]}"  # Показываем первое исправление
+        return False, message, issues
+    
+    if fixed_issues:
+        return True, f"✅ CHANGELOG: версии исправлены автоматически", fixed_issues
     
     return True, f"✅ CHANGELOG: версии корректны (последняя: {versions[0] if versions else 'не найдена'})", []
 
@@ -447,6 +530,18 @@ Exit codes:
         help='Количество дней для анализа изменений (по умолчанию: 7)'
     )
     
+    parser.add_argument(
+        '--auto-fix',
+        action='store_true',
+        help='Автоматически исправлять проблемы с порядком версий в CHANGELOG'
+    )
+    
+    parser.add_argument(
+        '--auto-update',
+        action='store_true',
+        help='Автоматически обновлять дату в ASSESSMENT.md при обнаружении устаревания'
+    )
+    
     args = parser.parse_args()
     
     project_root = get_project_root()
@@ -462,10 +557,10 @@ Exit codes:
     checks.append((is_ok, message, []))
     
     # Остальные проверки (возвращают 3 значения)
-    checks.append(check_assessment_vs_weeks(project_root))
+    checks.append(check_assessment_vs_weeks(project_root, args.auto_update))
     checks.append(check_readme_links(project_root))
     checks.append(check_contract_templates_vs_weeks(project_root))
-    checks.append(check_changelog_version_consistency(project_root))
+    checks.append(check_changelog_version_consistency(project_root, args.auto_fix))
     
     return print_report(checks, args.strict)
 

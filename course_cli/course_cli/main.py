@@ -417,6 +417,8 @@ def docs(
     strict: bool = typer.Option(False, "--strict", help="Строгий режим проверки"),
     days: int = typer.Option(7, "--days", help="Количество дней для анализа изменений"),
     no_interactive: bool = typer.Option(False, "--no-interactive", help="Неинтерактивный режим"),
+    auto_fix: bool = typer.Option(False, "--auto-fix", help="Автоматически исправлять проблемы с порядком версий"),
+    auto_update: bool = typer.Option(False, "--auto-update", help="Автоматически обновлять дату в ASSESSMENT.md"),
 ):
     """
     Управление документацией проекта.
@@ -438,6 +440,12 @@ def docs(
         
         if days != 7:
             cmd.extend(["--days", str(days)])
+        
+        if auto_fix:
+            cmd.append("--auto-fix")
+        
+        if auto_update:
+            cmd.append("--auto-update")
         
         try:
             result = subprocess.run(

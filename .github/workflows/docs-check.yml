@@ -22,7 +22,7 @@ jobs:
     - name: Check documentation sync
       run: |
         echo "🔍 Проверка синхронности документации..."
-        python scripts/check_docs_sync.py --strict
+        python scripts/check_docs_sync.py --strict --auto-fix --auto-update
         
     - name: Comment on PR if issues found
       if: failure() && github.event_name == 'pull_request'
