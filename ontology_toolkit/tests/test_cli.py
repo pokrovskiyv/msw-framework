@@ -30,7 +30,7 @@ def test_init_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "[OK]" in result.stdout
+    assert "OK" in result.stdout
     
     # Проверяем структуру
     assert ontology_path.exists()
@@ -57,12 +57,39 @@ def test_add_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "[OK]" in result.stdout
     assert "C_1" in result.stdout
+    assert "draft" in result.stdout.lower()
     
     # Проверяем, что файл создан
     concepts_dir = ontology_path / "concepts"
     files = list(concepts_dir.glob("*.md"))
+    assert len(files) == 1
+
+
+def test_add_command_method(tmp_path: Path):
+    """Проверяем команду add для типа method."""
+    ontology_path = tmp_path / ".ontology"
+
+    runner.invoke(app, ["init", "--path", str(ontology_path)])
+
+    result = runner.invoke(
+        app,
+        [
+            "add",
+            "Test Method",
+            "--type",
+            "method",
+            "--path",
+            str(ontology_path),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "M_1" in result.stdout
+    assert "Test Method" in result.stdout
+
+    methods_dir = ontology_path / "methods"
+    files = list(methods_dir.glob("*.md"))
     assert len(files) == 1
 
 
@@ -77,7 +104,7 @@ def test_add_command_without_init(tmp_path: Path):
     ])
     
     assert result.exit_code == 1
-    assert "[ERROR]" in result.stdout
+    assert "ERROR" in result.stdout
 
 
 def test_list_command_empty(tmp_path: Path):
@@ -108,6 +135,7 @@ def test_list_command_with_concepts(tmp_path: Path):
     assert "C_2" in result.stdout
     assert "Понятие 1" in result.stdout
     assert "Понятие 2" in result.stdout
+    assert "concept" in result.stdout.lower()
 
 
 def test_list_command_with_status_filter(tmp_path: Path):
@@ -125,6 +153,23 @@ def test_list_command_with_status_filter(tmp_path: Path):
     
     assert result.exit_code == 0
     assert "C_1" in result.stdout
+
+
+
+
+def test_list_command_with_type_filter(tmp_path: Path):
+    """????????? ?????????? ?????? ?? ???? ????????."""
+    ontology_path = tmp_path / ".ontology"
+
+    runner.invoke(app, ["init", "--path", str(ontology_path)])
+    runner.invoke(app, ["add", "Concept One", "--path", str(ontology_path)])
+    runner.invoke(app, ["add", "Method One", "--type", "method", "--path", str(ontology_path)])
+
+    result = runner.invoke(app, ["list", "--prefix", "method", "--path", str(ontology_path)])
+
+    assert result.exit_code == 0
+    assert "M_1" in result.stdout
+    assert "C_1" not in result.stdout
 
 
 def test_audit_command(tmp_path: Path):
@@ -157,7 +202,7 @@ def test_export_csv_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "[OK]" in result.stdout
+    assert "OK" in result.stdout
     assert output_file.exists()
 
 
@@ -177,7 +222,7 @@ def test_export_xlsx_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "[OK]" in result.stdout
+    assert "OK" in result.stdout
     assert output_file.exists()
 
 
@@ -196,7 +241,7 @@ def test_graph_command(tmp_path: Path):
     ])
     
     assert result.exit_code == 0
-    assert "[OK]" in result.stdout
+    assert "OK" in result.stdout
     assert output_file.exists()
     
     # Проверяем содержимое

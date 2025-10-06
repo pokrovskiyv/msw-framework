@@ -1,20 +1,20 @@
 """
-Класс Concept для работы с понятиями в формате Markdown + YAML frontmatter.
+Инструменты чтения/записи сущностей FPF в формате Markdown + YAML frontmatter.
 
-Управляет жизненным циклом понятия:
-- Создание из данных
-- Сохранение в MD файл
-- Загрузка из MD файла
-- Обновление полей
+Содержит:
+- универсальные функции для разбора и сериализации файлов;
+- менеджер `ConceptFile`, сохраняющий обратную совместимость с текущим API;
+- фабрику `ConceptFactory` для создания черновиков/заполненных концептов.
 """
+
+from __future__ import annotations
 
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, TypeVar
 
 import frontmatter
-import yaml
 
 from ontology_toolkit.core.schema import (
     Concept as ConceptModel,
@@ -23,301 +23,300 @@ from ontology_toolkit.core.schema import (
     MetaMetaType,
     Relation,
     RelationType,
-    ConceptSchema,
 )
 
+__all__ = [
+    "ConceptFile",
+    "ConceptFactory",
+    "entity_to_markdown",
+    "load_entity_from_file",
+    "save_entity_to_file",
+]
+
+TEntity = TypeVar("TEntity", bound=BaseEntity)
+
+
+# ---------------------------------------------------------------------------
+# Вспомогательные парсеры
+# ---------------------------------------------------------------------------
+
+def _parse_content_sections(content: str) -> Dict[str, str]:
+    """Разбивает Markdown-содержимое на секции заголовков второго уровня."""
+    sections: Dict[str, str] = {}
+    current_section: Optional[str] = None
+    buffer: List[str] = []
+
+    for line in content.split("\n"):
+        if line.startswith("## "):
+            if current_section:
+                sections[current_section] = "\n".join(buffer).strip()
+            current_section = line[3:].strip().lower()
+            buffer = []
+        elif current_section is not None:
+            buffer.append(line)
+
+    if current_section:
+        sections[current_section] = "\n".join(buffer).strip()
+
+    return sections
+
+
+def _parse_bullet_list(text: str) -> List[str]:
+    """Выделяет элементы маркированного списка (- /*) в списке строк."""
+    items: List[str] = []
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("- ") or stripped.startswith("* "):
+            items.append(stripped[2:].strip())
+    return items
+
+
+def _parse_relations(relations_data: Sequence[Dict[str, Any]]) -> List[Relation]:
+    """Конвертирует словари из frontmatter в объекты Relation."""
+    relations: List[Relation] = []
+    for raw in relations_data or []:
+        try:
+            relations.append(
+                Relation(
+                    type=RelationType(raw["type"]),
+                    target=raw["target"],
+                    description=raw.get("description"),
+                )
+            )
+        except (KeyError, ValueError):
+            # Некорректная запись — пропускаем, чтобы не прерывать загрузку.
+            continue
+    return relations
+
+
+def _parse_datetime(value: Any) -> datetime:
+    """Безопасно приводит значение к datetime."""
+    if not value:
+        return datetime.now()
+    if isinstance(value, datetime):
+        return value
+    try:
+        return datetime.fromisoformat(str(value))
+    except Exception:
+        return datetime.now()
+
+
+def _enum_to_value(value: Any) -> Any:
+    """Возвращает `.value` для Enum-значений, и исходное значение в остальных случаях."""
+    return getattr(value, "value", value)
+
+
+def _sanitize_filename(name: str) -> str:
+    """Формирует безопасное имя файла на основе названия сущности."""
+    translit = {
+        "а": "a",
+        "б": "b",
+        "в": "v",
+        "г": "g",
+        "д": "d",
+        "е": "e",
+        "ё": "yo",
+        "ж": "zh",
+        "з": "z",
+        "и": "i",
+        "й": "y",
+        "к": "k",
+        "л": "l",
+        "м": "m",
+        "н": "n",
+        "о": "o",
+        "п": "p",
+        "р": "r",
+        "с": "s",
+        "т": "t",
+        "у": "u",
+        "ф": "f",
+        "х": "h",
+        "ц": "ts",
+        "ч": "ch",
+        "ш": "sh",
+        "щ": "sch",
+        "ь": "",
+        "ы": "y",
+        "ъ": "",
+        "э": "e",
+        "ю": "yu",
+        "я": "ya",
+    }
+
+    normalized = []
+    for char in name.lower():
+        if char in translit:
+            normalized.append(translit[char])
+        elif char.isalnum() or char in ("-", "_"):
+            normalized.append(char)
+        elif char in (" ", "/", "\\"):
+            normalized.append("_")
+    safe = re.sub(r"_+", "_", "".join(normalized)).strip("_")
+    return safe[:50]
+
+
+# ---------------------------------------------------------------------------
+# Универсальные функции загрузки/сохранения
+# ---------------------------------------------------------------------------
+
+def load_entity_from_file(file_path: Path, entity_cls: Type[TEntity]) -> TEntity:
+    """Загружает сущность любого типа из Markdown-файла."""
+    if not file_path.exists():
+        raise FileNotFoundError(f"Файл не найден: {file_path}")
+
+    with open(file_path, "r", encoding="utf-8") as handler:
+        post = frontmatter.load(handler)
+
+    metadata = dict(post.metadata)
+    sections = _parse_content_sections(post.content)
+
+    field_names = set(entity_cls.model_fields.keys())
+    data: Dict[str, Any] = {}
+
+    if "definition" in field_names:
+        data["definition"] = sections.get("definition", "")
+    if "purpose" in field_names:
+        data["purpose"] = sections.get("purpose", "")
+    if "examples" in field_names:
+        data["examples"] = _parse_bullet_list(sections.get("examples", ""))
+    if "notes" in field_names:
+        data["notes"] = sections.get("notes")
+
+    if "relations" in field_names:
+        data["relations"] = _parse_relations(metadata.get("relations", []))
+    if "created" in field_names:
+        data["created"] = _parse_datetime(metadata.get("created"))
+    if "updated" in field_names:
+        data["updated"] = _parse_datetime(metadata.get("updated"))
+
+    for key, value in metadata.items():
+        if key in {"relations", "created", "updated"}:
+            continue
+        if key in field_names:
+            data[key] = value
+
+    return entity_cls(**data)  # type: ignore[arg-type]
+
+
+def entity_to_markdown(entity: BaseEntity) -> str:
+    """Формирует Markdown + YAML frontmatter для произвольной сущности."""
+    payload = entity.model_dump(mode="python")
+
+    metadata: Dict[str, Any] = {}
+    definition = payload.pop("definition", "")
+    purpose = payload.pop("purpose", "")
+    examples = payload.pop("examples", [])
+    notes = payload.pop("notes", None)
+    relations = payload.pop("relations", [])
+    created = payload.pop("created", datetime.now())
+    updated = payload.pop("updated", datetime.now())
+
+    for key, value in payload.items():
+        metadata[key] = _enum_to_value(value)
+
+    serialized_relations: List[Dict[str, Any]] = []
+    for relation in relations:
+        if isinstance(relation, Relation):
+            serialized_relations.append(
+                {
+                    "type": relation.type.value,
+                    "target": relation.target,
+                    "description": relation.description,
+                }
+            )
+        elif isinstance(relation, dict):
+            serialized_relations.append(
+                {
+                    "type": _enum_to_value(relation.get("type")),
+                    "target": relation.get("target"),
+                    "description": relation.get("description"),
+                }
+            )
+    metadata["relations"] = serialized_relations
+    metadata["created"] = created.isoformat()
+    metadata["updated"] = updated.isoformat()
+
+    sections: List[Tuple[str, str]] = [
+        ("Definition", definition or "[пусто]"),
+        ("Purpose", purpose or "[пусто]"),
+    ]
+
+    lines: List[str] = [f"# {entity.name}", ""]
+    for title, text in sections:
+        lines.append(f"## {title}")
+        lines.append(text)
+        lines.append("")
+
+    if examples:
+        lines.append("## Examples")
+        lines.append("")
+        for example in examples:
+            lines.append(f"- {example}")
+        lines.append("")
+
+    if notes:
+        lines.append("## Notes")
+        lines.append(notes)
+        lines.append("")
+
+    post = frontmatter.Post("\n".join(lines).strip() + "\n", **metadata)
+    return frontmatter.dumps(post)
+
+
+def save_entity_to_file(
+    entity: BaseEntity,
+    directory: Path,
+    overwrite: bool = False,
+) -> Path:
+    """Сохраняет сущность в указанную директорию."""
+    directory.mkdir(parents=True, exist_ok=True)
+
+    filename = f"{entity.id}_{_sanitize_filename(entity.name or entity.id)}.md"
+    file_path = directory / filename
+
+    if file_path.exists() and not overwrite:
+        raise FileExistsError(f"Файл уже существует: {file_path}")
+
+    with open(file_path, "w", encoding="utf-8") as handler:
+        handler.write(entity_to_markdown(entity))
+
+    return file_path
+
+
+# ---------------------------------------------------------------------------
+# API для концептов (обратная совместимость)
+# ---------------------------------------------------------------------------
 
 class ConceptFile:
-    """Класс для работы с файлом понятия (MD + YAML frontmatter)."""
+    """Обёртка над ConceptModel для обратной совместимости с текущим кодом."""
 
     def __init__(self, concept: ConceptModel):
-        """
-        Инициализация из Pydantic-модели.
-        
-        Args:
-            concept: Модель понятия
-        """
         self.concept = concept
 
     @classmethod
     def from_file(cls, file_path: Path) -> "ConceptFile":
-        """
-        Загрузить понятие из файла.
-        
-        Args:
-            file_path: Путь к MD файлу
-            
-        Returns:
-            ConceptFile экземпляр
-        """
-        if not file_path.exists():
-            raise FileNotFoundError(f"Файл не найден: {file_path}")
-
-        # Парсим frontmatter
-        with open(file_path, "r", encoding="utf-8") as f:
-            post = frontmatter.load(f)
-
-        metadata = post.metadata
-        content = post.content
-
-        # Парсим контент на секции
-        sections = cls._parse_content(content)
-
-        # Создаём Pydantic модель
-        concept = ConceptModel(
-            id=metadata.get("id", ""),
-            name=metadata.get("name", ""),
-            status=ConceptStatus(metadata.get("status", "draft")),
-            meta_meta=MetaMetaType(metadata["meta_meta"]) if metadata.get("meta_meta") else None,
-            definition=sections.get("definition", ""),
-            purpose=sections.get("purpose", ""),
-            examples=cls._parse_list(sections.get("examples", "")),
-            relations=cls._parse_relations(metadata.get("relations", [])),
-            created=cls._parse_datetime(metadata.get("created")),
-            updated=cls._parse_datetime(metadata.get("updated")),
-            notes=sections.get("notes"),
-        )
-
-        return cls(concept)
-
-    @staticmethod
-    def _parse_content(content: str) -> Dict[str, str]:
-        """
-        Парсинг контента на секции (Definition, Purpose, Examples, Notes).
-        
-        Args:
-            content: Markdown контент
-            
-        Returns:
-            Словарь с секциями
-        """
-        sections = {}
-        current_section = None
-        current_text = []
-
-        for line in content.split("\n"):
-            # Проверяем заголовок секции
-            if line.startswith("## "):
-                # Сохраняем предыдущую секцию
-                if current_section:
-                    sections[current_section] = "\n".join(current_text).strip()
-                # Новая секция
-                current_section = line[3:].strip().lower()
-                current_text = []
-            elif current_section:
-                current_text.append(line)
-
-        # Сохраняем последнюю секцию
-        if current_section:
-            sections[current_section] = "\n".join(current_text).strip()
-
-        return sections
-
-    @staticmethod
-    def _parse_list(text: str) -> List[str]:
-        """
-        Парсинг маркированного списка в список строк.
-        
-        Args:
-            text: Текст со списком
-            
-        Returns:
-            Список элементов
-        """
-        items = []
-        for line in text.split("\n"):
-            line = line.strip()
-            if line.startswith("- ") or line.startswith("* "):
-                items.append(line[2:].strip())
-        return items
-
-    @staticmethod
-    def _parse_relations(relations_data: List[Dict[str, Any]]) -> List[Relation]:
-        """
-        Парсинг связей из YAML.
-        
-        Args:
-            relations_data: Список словарей с relations
-            
-        Returns:
-            Список Relation объектов
-        """
-        relations = []
-        for rel_data in relations_data:
-            try:
-                rel = Relation(
-                    type=RelationType(rel_data["type"]),
-                    target=rel_data["target"],
-                    description=rel_data.get("description"),
-                )
-                relations.append(rel)
-            except (KeyError, ValueError) as e:
-                # Логируем ошибку, но не падаем
-                print(f"Warning: Не удалось распарсить связь: {rel_data}, ошибка: {e}")
-        return relations
-
-    @staticmethod
-    def _parse_datetime(dt_str: Optional[str]) -> datetime:
-        """Парсинг datetime из строки."""
-        if not dt_str:
-            return datetime.now()
-        if isinstance(dt_str, datetime):
-            return dt_str
-        try:
-            return datetime.fromisoformat(str(dt_str))
-        except:
-            return datetime.now()
+        return cls(load_entity_from_file(file_path, ConceptModel))
 
     def to_markdown(self) -> str:
-        """
-        Конвертировать в Markdown + YAML frontmatter.
-        
-        Returns:
-            Строка с полным содержимым файла
-        """
-        # YAML frontmatter
-        metadata = {
-            "id": self.concept.id,
-            "name": self.concept.name,
-            "status": self.concept.status.value,
-            "meta_meta": self.concept.meta_meta.value if self.concept.meta_meta else None,
-            "relations": [
-                {
-                    "type": rel.type.value,
-                    "target": rel.target,
-                    "description": rel.description,
-                }
-                for rel in self.concept.relations
-            ],
-            "created": self.concept.created.isoformat(),
-            "updated": self.concept.updated.isoformat(),
-        }
-
-        # Markdown контент
-        content_parts = [
-            f"# {self.concept.name}",
-            "",
-            "## Definition",
-            self.concept.definition,
-            "",
-            "## Purpose",
-            self.concept.purpose,
-            "",
-        ]
-
-        if self.concept.examples:
-            content_parts.extend([
-                "## Examples",
-                "",
-            ])
-            for example in self.concept.examples:
-                content_parts.append(f"- {example}")
-            content_parts.append("")
-
-        if self.concept.notes:
-            content_parts.extend([
-                "## Notes",
-                self.concept.notes,
-                "",
-            ])
-
-        content = "\n".join(content_parts)
-
-        # Собираем вместе
-        post = frontmatter.Post(content, **metadata)
-        return frontmatter.dumps(post)
+        return entity_to_markdown(self.concept)
 
     def save(self, directory: Path, overwrite: bool = False) -> Path:
-        """
-        Сохранить в файл.
-        
-        Args:
-            directory: Директория для сохранения
-            overwrite: Перезаписать если существует
-            
-        Returns:
-            Путь к сохранённому файлу
-        """
-        # Формируем имя файла: C_1_agency.md
-        safe_name = self._sanitize_filename(self.concept.name)
-        filename = f"{self.concept.id}_{safe_name}.md"
-        file_path = directory / filename
-
-        if file_path.exists() and not overwrite:
-            raise FileExistsError(f"Файл уже существует: {file_path}")
-
-        # Создаём директорию если нужно
-        directory.mkdir(parents=True, exist_ok=True)
-
-        # Сохраняем
-        markdown_content = self.to_markdown()
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(markdown_content)
-
-        return file_path
-
-    @staticmethod
-    def _sanitize_filename(name: str) -> str:
-        """
-        Преобразовать название в безопасное имя файла.
-        
-        Args:
-            name: Название понятия
-            
-        Returns:
-            Безопасное имя файла
-        """
-        # Транслитерация основных русских букв
-        translit_map = {
-            "а": "a", "б": "b", "в": "v", "г": "g", "д": "d",
-            "е": "e", "ё": "yo", "ж": "zh", "з": "z", "и": "i",
-            "й": "y", "к": "k", "л": "l", "м": "m", "н": "n",
-            "о": "o", "п": "p", "р": "r", "с": "s", "т": "t",
-            "у": "u", "ф": "f", "х": "h", "ц": "ts", "ч": "ch",
-            "ш": "sh", "щ": "sch", "ъ": "", "ы": "y", "ь": "",
-            "э": "e", "ю": "yu", "я": "ya",
-        }
-
-        # Приводим к lowercase
-        name = name.lower()
-
-        # Транслитерация
-        result = ""
-        for char in name:
-            if char in translit_map:
-                result += translit_map[char]
-            elif char.isalnum() or char in ("-", "_"):
-                result += char
-            elif char in (" ", "/", "\\"):
-                result += "_"
-
-        # Убираем множественные подчёркивания и ограничиваем длину
-        result = re.sub(r"_+", "_", result)
-        result = result.strip("_")
-        return result[:50]  # Ограничение длины
+        return save_entity_to_file(self.concept, directory, overwrite=overwrite)
 
     def update_field(self, field_name: str, value: Any) -> None:
-        """
-        Обновить поле понятия.
-        
-        Args:
-            field_name: Название поля
-            value: Новое значение
-        """
         if hasattr(self.concept, field_name):
             setattr(self.concept, field_name, value)
             self.concept.updated = datetime.now()
         else:
-            raise ValueError(f"Поле {field_name} не существует")
+            raise ValueError(f"Поле {field_name} не найдено")
 
     def add_example(self, example: str) -> None:
-        """Добавить пример."""
         if example not in self.concept.examples:
             self.concept.examples.append(example)
             self.concept.updated = datetime.now()
 
     def remove_example(self, example: str) -> bool:
-        """Удалить пример. Возвращает True если удалён."""
         if example in self.concept.examples:
             self.concept.examples.remove(example)
             self.concept.updated = datetime.now()
@@ -326,25 +325,15 @@ class ConceptFile:
 
 
 class ConceptFactory:
-    """Фабрика для создания понятий."""
+    """Фабрика для создания новых концептов."""
 
     @staticmethod
     def create_draft(name: str, concept_id: Optional[str] = None) -> ConceptModel:
-        """
-        Создать черновик понятия (только с именем).
-        
-        Args:
-            name: Название понятия
-            concept_id: ID (если None, будет присвоен позже)
-            
-        Returns:
-            Concept модель со статусом draft
-        """
         return ConceptModel(
             id=concept_id or "C_TEMP",
             name=name,
-            definition="[Заполнить]",
-            purpose="[Заполнить]",
+            definition="[пусто]",
+            purpose="[пусто]",
             status=ConceptStatus.DRAFT,
         )
 
@@ -357,20 +346,6 @@ class ConceptFactory:
         examples: List[str],
         concept_id: Optional[str] = None,
     ) -> ConceptModel:
-        """
-        Создать заполненное понятие.
-        
-        Args:
-            name: Название
-            definition: Определение
-            purpose: Назначение
-            meta_meta: Тип из FPF
-            examples: Примеры
-            concept_id: ID (если None, будет присвоен позже)
-            
-        Returns:
-            Concept модель со статусом draft+filled
-        """
         return ConceptModel(
             id=concept_id or "C_TEMP",
             name=name,

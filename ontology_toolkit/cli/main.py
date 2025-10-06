@@ -13,7 +13,7 @@ CLI для Ontology Toolkit.
 import sys
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional
 
 # Настройка кодировки для Windows
 if sys.platform == "win32":
@@ -57,7 +57,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from ontology_toolkit.core.ontology import Ontology
+from ontology_toolkit.core.ontology import ENTITY_REGISTRY, Ontology
 from ontology_toolkit.core.schema import ConceptStatus
 from ontology_toolkit.io.csv_export import export_concepts_to_csv
 from ontology_toolkit.io.xlsx_export import export_to_xlsx
@@ -77,6 +77,30 @@ console = Console(
 
 # Путь к онтологии по умолчанию
 DEFAULT_ONTOLOGY_PATH = Path(".ontology")
+
+SUPPORTED_ENTITY_TYPES = tuple(ENTITY_REGISTRY.keys())
+TYPE_TO_PREFIX: Dict[str, str] = {
+    name: config["prefix"] for name, config in ENTITY_REGISTRY.items()
+}
+PREFIX_TO_TYPE: Dict[str, str] = {
+    config["prefix"]: name for name, config in ENTITY_REGISTRY.items()
+}
+
+
+def normalize_entity_type(value: str) -> str:
+    """Приводит пользовательский ввод типа сущности к каноническому виду."""
+    candidate = value.lower()
+    if candidate in ENTITY_REGISTRY:
+        return candidate
+
+    candidate_upper = value.upper()
+    for name, prefix in TYPE_TO_PREFIX.items():
+        if prefix == candidate_upper:
+            return name
+
+    raise ValueError(
+        f"Неизвестный тип '{value}'. Доступны: {', '.join(SUPPORTED_ENTITY_TYPES)}"
+    )
 
 
 @app.command()
@@ -183,19 +207,20 @@ def add(
         onto = Ontology(path)
         onto.load_all()
         
-        # Добавляем понятие (пока только concepts поддерживается)
-        if type == "concept":
-            concept = onto.add_concept(name)
-            file_path = onto.save_concept(concept)
-            
-            console.print(f"[green][OK] Создано: {concept.id} — {concept.name}[/green]")
-            console.print(f"[dim][FILE] {file_path.name}[/dim]")
-            console.print(f"[yellow][!] Статус: {concept.status.value} (нужно заполнить)[/yellow]")
+        # ??????? ???????? ?????????? ????
+        entity_type = normalize_entity_type(type)
+        entity = onto.create_entity(name, entity_type)
+        file_path = onto.save_entity(entity)
+
+        type_label = entity_type.capitalize()
+        console.print(f"[green][OK] ??????? ({type_label}): {entity.id} ? {entity.name}[/green]")
+        console.print(f"[dim][FILE] {file_path.name}[/dim]")
+
+        if hasattr(entity, "status"):
+            console.print(f"[yellow][!] ??????: {entity.status.value} (????????? ???????? ????? ????????????)[/yellow]")
         else:
-            console.print(f"[red][ERROR] Тип '{type}' пока не поддерживается[/red]")
-            console.print(f"[dim]Доступно: concept[/dim]")
-            raise typer.Exit(code=1)
-        
+            console.print("[yellow][TIP] ????????? ?????? Definition/Purpose ? ????????? ?????[/yellow]")
+
     except ValueError as e:
         console.print(f"[red][ERROR] Ошибка: {e}[/red]")
         raise typer.Exit(code=1)
@@ -231,7 +256,17 @@ def list_entities(
         
         # Фильтр по префиксу
         if prefix:
-            entities = onto.index.by_prefix.get(prefix.upper(), [])
+            try:
+                normalized_type = normalize_entity_type(prefix)
+                prefix_value = TYPE_TO_PREFIX[normalized_type]
+            except ValueError:
+                # Если пользователь передал неизвестный тип — покажем ошибку ниже
+                console.print(f"[red][ERROR] Неизвестный тип '{prefix}'[/red]")
+                console.print(
+                    f"[dim]Доступные типы: {', '.join(SUPPORTED_ENTITY_TYPES)}[/dim]"
+                )
+                raise typer.Exit(code=1)
+            entities = list(onto.index.by_prefix.get(prefix_value, []))
         
         # Фильтр по статусу
         if status:
@@ -248,25 +283,32 @@ def list_entities(
             console.print("[yellow]Объектов не найдено[/yellow]")
             return
         
-        table = Table(title=f"Объекты онтологии ({len(entities)})")
+        table = Table(title=f"???????? ????????? ({len(entities)})")
         table.add_column("ID", style="cyan", no_wrap=True)
-        table.add_column("Название", style="white")
-        table.add_column("Статус", style="yellow")
-        table.add_column("Тип", style="magenta")
+        table.add_column("???", style="green", no_wrap=True)
+        table.add_column("????????", style="white")
+        table.add_column("??????", style="yellow")
+        table.add_column("Meta", style="magenta")
         
         for entity in entities:
-            status_str = entity.status.value if hasattr(entity, 'status') else "-"
-            # meta_meta может быть enum или строкой
-            if hasattr(entity, 'meta_meta') and entity.meta_meta:
-                meta_meta_str = entity.meta_meta.value if hasattr(entity.meta_meta, 'value') else str(entity.meta_meta)
+            prefix_value = entity.id.split("_", 1)[0] if "_" in entity.id else entity.id
+            entity_type = PREFIX_TO_TYPE.get(prefix_value, prefix_value)
+            status_str = entity.status.value if hasattr(entity, "status") else "-"
+            if hasattr(entity, "meta_meta") and entity.meta_meta:
+                meta_meta_str = (
+                    entity.meta_meta.value
+                    if hasattr(entity.meta_meta, "value")
+                    else str(entity.meta_meta)
+                )
             else:
                 meta_meta_str = "-"
             
             table.add_row(
                 entity.id,
-                entity.name[:50],  # Ограничиваем длину
+                entity_type,
+                entity.name[:50],
                 status_str,
-                meta_meta_str
+                meta_meta_str,
             )
         
         console.print(table)

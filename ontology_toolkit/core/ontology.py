@@ -11,9 +11,8 @@
 """
 
 from collections import defaultdict
-from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Any
+from typing import Any, Dict, List, Optional, Set, Tuple, Type
 
 import networkx as nx
 from rich.console import Console
@@ -29,7 +28,23 @@ from ontology_toolkit.core.schema import (
     ConceptStatus,
     ConceptSchema,
 )
-from ontology_toolkit.core.concept import ConceptFile, ConceptFactory
+from ontology_toolkit.core.concept import (
+    ConceptFactory,
+    load_entity_from_file,
+    save_entity_to_file,
+)
+
+ENTITY_REGISTRY: Dict[str, Dict[str, Any]] = {
+    "concept": {"model": ConceptModel, "dir_attr": "concepts_dir", "prefix": "C"},
+    "method": {"model": Method, "dir_attr": "methods_dir", "prefix": "M"},
+    "system": {"model": System, "dir_attr": "systems_dir", "prefix": "S"},
+    "problem": {"model": Problem, "dir_attr": "problems_dir", "prefix": "P"},
+    "artifact": {"model": Artifact, "dir_attr": "artifacts_dir", "prefix": "A"},
+}
+
+PREFIX_TO_DIR: Dict[str, str] = {
+    cfg["prefix"]: cfg["dir_attr"] for cfg in ENTITY_REGISTRY.values()
+}
 
 
 class OntologyIndex:
@@ -134,25 +149,23 @@ class Ontology:
         self.artifacts_dir = self.root_path / "artifacts"
 
     def load_all(self) -> None:
-        """Загрузить все объекты из файлов."""
-        self.console.print("[bold blue]Загрузка онтологии...[/bold blue]")
+        """Загружает все сущности из файловой структуры проекта."""
+        self.console.print("[bold blue]Загрузка онтологии из файлов...[/bold blue]")
 
-        # Загружаем понятия
-        if self.concepts_dir.exists():
-            for file_path in self.concepts_dir.glob("*.md"):
+        for config in ENTITY_REGISTRY.values():
+            directory: Path = getattr(self, config["dir_attr"])
+            entity_cls: Type[BaseEntity] = config["model"]  # type: ignore[assignment]
+            if not directory.exists():
+                continue
+
+            for file_path in directory.glob("*.md"):
                 try:
-                    concept_file = ConceptFile.from_file(file_path)
-                    self.add_entity(concept_file.concept)
-                except Exception as e:
-                    self.console.print(f"[red]Ошибка загрузки {file_path}: {e}[/red]")
+                    entity = load_entity_from_file(file_path, entity_cls)
+                    self.add_entity(entity)
+                except Exception as exc:
+                    self.console.print(f"[red]?????? ??? ???????? {file_path}: {exc}[/red]")
 
-        # TODO: Загрузка methods, systems, problems, artifacts (аналогично)
-
-        self.console.print(
-            f"[green]Загружено объектов: {len(self.index.by_id)}[/green]"
-        )
-
-        # Строим граф
+        self.console.print(f"[green]Загружено объектов: {len(self.index.by_id)}[/green]")
         self._build_graph()
 
     def add_entity(self, entity: BaseEntity) -> None:
@@ -211,6 +224,31 @@ class Ontology:
 
         return concept
 
+    def create_entity(self, name: str, entity_type: str) -> BaseEntity:
+        """Создаёт сущность заданного типа и регистрирует её в индексе."""
+        normalized = entity_type.lower()
+        if normalized == "concept":
+            return self.add_concept(name)
+
+        config = ENTITY_REGISTRY.get(normalized)
+        if not config:
+            raise ValueError(f"Неизвестный тип сущности: {entity_type}")
+
+        if self.index.find_by_name(name):
+            raise ValueError(f"Сущность с именем '{name}' уже существует")
+
+        prefix = config["prefix"]
+        entity_cls: Type[BaseEntity] = config["model"]  # type: ignore[assignment]
+        entity_id = self.get_next_id(prefix)
+        entity = entity_cls(  # type: ignore[call-arg]
+            id=entity_id,
+            name=name,
+            definition="[пусто]",
+            purpose="[пусто]",
+        )
+        self.add_entity(entity)
+        return entity
+
     def get_concept(self, concept_id: str) -> Optional[ConceptModel]:
         """Получить понятие по ID."""
         entity = self.index.get(concept_id)
@@ -219,19 +257,18 @@ class Ontology:
         return None
 
     def save_concept(self, concept: ConceptModel, overwrite: bool = True) -> Path:
-        """
-        Сохранить понятие в файл.
-        
-        Args:
-            concept: Понятие для сохранения
-            overwrite: Перезаписать если существует
-            
-        Returns:
-            Путь к сохранённому файлу
-        """
-        concept_file = ConceptFile(concept)
-        return concept_file.save(self.concepts_dir, overwrite=overwrite)
+        """Сохраняет концепт в файловой системе."""
+        return self.save_entity(concept, overwrite=overwrite)
 
+    def save_entity(self, entity: BaseEntity, overwrite: bool = True) -> Path:
+        """Сохраняет сущность любого типа в соответствующую директорию."""
+        prefix, _ = ConceptSchema.parse_id(entity.id)
+        directory_attr = PREFIX_TO_DIR.get(prefix)
+        if not directory_attr:
+            raise ValueError(f"Неизвестный префикс '{prefix}' для сущности {entity.id}")
+
+        directory: Path = getattr(self, directory_attr)
+        return save_entity_to_file(entity, directory, overwrite=overwrite)
     def _build_graph(self) -> None:
         """Построить граф связей между объектами."""
         self.graph.clear()
@@ -404,3 +441,8 @@ class Ontology:
         # Простая версия: предлагаем объекты из того же "кластера" в графе
         related = self.get_related(entity_id, depth=2)
         return list(related)[:max_suggestions]
+
+
+
+
+

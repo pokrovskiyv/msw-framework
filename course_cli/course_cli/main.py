@@ -48,13 +48,21 @@ console = Console(
 # Путь к проекту (корень репозитория)
 def get_project_root() -> Path:
     """Определить корень проекта."""
-    # Ищем от текущей директории вверх
+    # Начинаем поиск от директории, где находится этот файл
+    current = Path(__file__).parent.parent.parent  # course_cli/course_cli/main.py -> корень
+    
+    # Проверяем, что мы в корне проекта
+    if (current / "weeks").exists() and (current / "templates").exists():
+        return current
+    
+    # Если не нашли от файла, ищем от текущей директории вверх
     current = Path.cwd()
     for parent in [current] + list(current.parents):
         if (parent / "weeks").exists() and (parent / "templates").exists():
             return parent
-    # Если не нашли, возвращаем текущую
-    return current
+    
+    # В крайнем случае возвращаем текущую директорию
+    return Path.cwd()
 
 PROJECT_ROOT = get_project_root()
 WEEKS_DIR = PROJECT_ROOT / "weeks"
