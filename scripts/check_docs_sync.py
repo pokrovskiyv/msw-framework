@@ -355,9 +355,11 @@ def check_changelog_version_consistency(project_root: Path, auto_fix: bool = Fal
     except Exception as e:
         return False, f"❌ Ошибка чтения CHANGELOG.md: {e}", []
     
-    # Поиск версий вида ## [X.Y.Z]
+    # Поиск версий вида ## [X.Y.Z] (только в основном списке, не в планах)
+    # Исключаем раздел "Планы на следующие версии"
+    main_content = content.split("## Планы на следующие версии")[0]
     version_pattern = r'## \[(\d+\.\d+\.\d+)\]'
-    versions = re.findall(version_pattern, content)
+    versions = re.findall(version_pattern, main_content)
     
     issues = []
     fixed_issues = []
