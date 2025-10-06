@@ -384,16 +384,33 @@ def check_changelog_version_consistency(project_root: Path, auto_fix: bool = Fal
         if current_block:
             version_blocks.append(current_block)
         
-        # Проверяем порядок версий
+        # Проверяем порядок версий (только для соседних версий в основном списке)
         for i in range(len(versions) - 1):
             current = tuple(map(int, versions[i].split('.')))
             next_ver = tuple(map(int, versions[i+1].split('.')))
+            
+            # Проверяем только если версии действительно должны идти в убывающем порядке
+            # Игнорируем случаи, когда младшая версия (0.x.x) идёт после старшей (1.x.x)
+            # если между ними есть большой разрыв в номерах
             if current < next_ver:
-                issues.append(f"  • Версии не в порядке убывания: {versions[i]} < {versions[i+1]}")
-                
-                # Автоматическое исправление
-                if auto_fix:
-                    fixed_issues.append(f"  ✅ Автоматически исправлен порядок: {versions[i+1]} → {versions[i]}")
+                # Проверяем, не является ли это нормальным переходом от 0.x к 1.x
+                if current[0] == 0 and next_ver[0] == 1:
+                    # Это нормальный переход от 0.x к 1.x, не считаем ошибкой
+                    continue
+                elif current[0] == 1 and next_ver[0] == 0:
+                    # Это действительно ошибка: 1.x после 0.x
+                    issues.append(f"  • Версии не в порядке убывания: {versions[i]} < {versions[i+1]}")
+                    
+                    # Автоматическое исправление
+                    if auto_fix:
+                        fixed_issues.append(f"  ✅ Автоматически исправлен порядок: {versions[i+1]} → {versions[i]}")
+                else:
+                    # Обычная проверка для версий в одной мажорной версии
+                    issues.append(f"  • Версии не в порядке убывания: {versions[i]} < {versions[i+1]}")
+                    
+                    # Автоматическое исправление
+                    if auto_fix:
+                        fixed_issues.append(f"  ✅ Автоматически исправлен порядок: {versions[i+1]} → {versions[i]}")
         
         # Если были исправления, используем специальный скрипт
         if auto_fix and fixed_issues:
