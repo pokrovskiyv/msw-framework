@@ -291,7 +291,34 @@ def generate_changelog_entry(
     
     return entry
 
-def update_changelog_interactive(project_root: Path, changes: Dict[str, List[str]]):
+def update_assessment_auto(project_root: Path, changes: Dict[str, List[str]]):
+    """Автоматическое обновление ASSESSMENT.md."""
+    assessment_path = project_root / "ASSESSMENT.md"
+    
+    if not assessment_path.exists():
+        print(f"{Colors.FAIL}❌ ASSESSMENT.md не найден!{Colors.ENDC}")
+        return
+    
+    try:
+        # Читаем текущий ASSESSMENT
+        content = assessment_path.read_text(encoding="utf-8")
+        
+        # Обновляем дату последнего обновления
+        current_date = datetime.now().strftime("%d %B %Y")
+        content = re.sub(
+            r'Дата последнего обновления: \d{1,2} \w+ \d{4}',
+            f'Дата последнего обновления: {current_date}',
+            content
+        )
+        
+        # Записываем обновлённый файл
+        assessment_path.write_text(content, encoding="utf-8")
+        print(f"{Colors.OKGREEN}✅ ASSESSMENT.md обновлён (дата: {current_date}){Colors.ENDC}")
+        
+    except Exception as e:
+        print(f"{Colors.FAIL}❌ Ошибка обновления ASSESSMENT.md: {e}{Colors.ENDC}")
+
+def update_changelog_interactive(project_root: Path, changes: Dict[str, List[str]], auto_mode: bool = False):
     """Интерактивное обновление CHANGELOG."""
     changelog_path = project_root / "CHANGELOG.md"
     
@@ -307,8 +334,12 @@ def update_changelog_interactive(project_root: Path, changes: Dict[str, List[str
     print(f"{Colors.OKGREEN}Предлагаемая версия: {suggested_version}{Colors.ENDC}\n")
     
     # Спрашиваем версию
-    version_input = input(f"Введите версию (Enter для {suggested_version}): ").strip()
-    version = version_input if version_input else suggested_version
+    if auto_mode:
+        version = suggested_version
+        print(f"{Colors.OKGREEN}Автоматический режим: используем версию {version}{Colors.ENDC}")
+    else:
+        version_input = input(f"Введите версию (Enter для {suggested_version}): ").strip()
+        version = version_input if version_input else suggested_version
     
     # Генерируем заготовку
     entry = generate_changelog_entry(version, changes, project_root)
@@ -318,7 +349,11 @@ def update_changelog_interactive(project_root: Path, changes: Dict[str, List[str
     print(entry)
     print(f"{Colors.BOLD}{'─'*70}{Colors.ENDC}\n")
     
-    confirm = input(f"Добавить эту запись в CHANGELOG? (y/n): ").strip().lower()
+    if auto_mode:
+        confirm = 'y'
+        print(f"{Colors.OKGREEN}Автоматический режим: добавляем запись в CHANGELOG{Colors.ENDC}")
+    else:
+        confirm = input(f"Добавить эту запись в CHANGELOG? (y/n): ").strip().lower()
     
     if confirm == 'y':
         try:
@@ -364,7 +399,7 @@ def update_changelog_interactive(project_root: Path, changes: Dict[str, List[str
     else:
         print(f"{Colors.WARNING}⏸️  Обновление отменено{Colors.ENDC}")
 
-def suggest_assessment_updates(project_root: Path, changes: Dict[str, List[str]]):
+def suggest_assessment_updates(project_root: Path, changes: Dict[str, List[str]], auto_mode: bool = False):
     """Предложить, какие блоки ASSESSMENT нужно обновить."""
     print(f"\n{Colors.BOLD}{Colors.HEADER}📊 Рекомендации по ASSESSMENT.md{Colors.ENDC}\n")
     
@@ -395,7 +430,13 @@ def suggest_assessment_updates(project_root: Path, changes: Dict[str, List[str]]
     if suggestions:
         for s in suggestions:
             print(f"{Colors.OKCYAN}{s}{Colors.ENDC}")
-        print(f"\n{Colors.WARNING}💡 Не забудьте пересчитать проценты готовности!{Colors.ENDC}")
+        
+        if auto_mode:
+            print(f"\n{Colors.OKGREEN}Автоматический режим: обновляем ASSESSMENT.md{Colors.ENDC}")
+            # Автоматически обновляем ASSESSMENT.md
+            update_assessment_auto(project_root, changes)
+        else:
+            print(f"\n{Colors.WARNING}💡 Не забудьте пересчитать проценты готовности!{Colors.ENDC}")
     else:
         print(f"{Colors.OKGREEN}✅ ASSESSMENT не требует обновления для текущих изменений{Colors.ENDC}")
 
@@ -476,6 +517,12 @@ def main():
         help='Неинтерактивный режим (только анализ, без обновления CHANGELOG)'
     )
     
+    parser.add_argument(
+        '--auto',
+        action='store_true',
+        help='Автоматический режим (без интерактивных запросов)'
+    )
+    
     args = parser.parse_args()
     
     project_root = get_project_root()
@@ -511,10 +558,10 @@ def main():
     
     # Обновление CHANGELOG (только в интерактивном режиме)
     if not args.no_interactive:
-        update_changelog_interactive(project_root, changes)
+        update_changelog_interactive(project_root, changes, auto_mode=args.auto)
     
     # Рекомендации по ASSESSMENT
-    suggest_assessment_updates(project_root, changes)
+    suggest_assessment_updates(project_root, changes, auto_mode=args.auto)
     
     # Проверка README
     check_readme_needs_update(project_root, changes)
