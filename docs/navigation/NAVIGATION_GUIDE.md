@@ -54,6 +54,7 @@
 - **Инструкция:** `How_to_fill_contract.md`
 - **Пример:** `Example_Contract.md`
 - **Шаблон:** `Personal_Contract_v4.0_Template.md`
+- **С AI ассистентом:** `AI_ASSISTANT_GUIDE.md` (дополнительно)
 
 ---
 

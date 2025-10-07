@@ -22,6 +22,7 @@
 | [Personal_Contract_v1.0_Week1_Template.md](templates/Personal_Contract_v1.0_Week1_Template.md) | Шаблон контракта для недели 1 | 12KB |
 | [Personal_Contract_v4.0_Template.md](Personal_Contract_v4.0_Template.md) | Полный шаблон контракта | 40KB |
 | [How_to_fill_contract.md](How_to_fill_contract.md) | Инструкция по заполнению | 27KB |
+| [AI_ASSISTANT_GUIDE.md](AI_ASSISTANT_GUIDE.md) | Руководство по работе с AI | 15KB |
 | [Example_Contract.md](Example_Contract.md) | Пример заполненного контракта | 21KB |
 | [SELF_STUDY_GUIDE.md](SELF_STUDY_GUIDE.md) | Руководство для самостоятельного изучения | 30KB |
 | [SELF_STUDY_CHECKLIST.md](SELF_STUDY_CHECKLIST.md) | Чек-лист для самостоятельного изучения | 14KB |

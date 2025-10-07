@@ -80,3 +80,6 @@ Week_*_Energy_Budget_*.md
 
 # Development methodology (private document)
 DEVELOPMENT_METHODOLOGY.md
+
+# Temporary files
+.temp/
