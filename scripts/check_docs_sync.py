@@ -281,10 +281,17 @@ def check_readme_links(project_root: Path) -> Tuple[bool, str, List[str]]:
         if link.startswith(('http://', 'https://', '#')):
             continue
         
-        # Проверяем локальные файлы
-        link_path = project_root / link
-        if not link_path.exists():
-            broken.append(f"  • [{text}]({link})")
+        # Отделяем якорь от пути к файлу
+        if '#' in link:
+            file_path = link.split('#', 1)[0]
+        else:
+            file_path = link
+        
+        # Проверяем только существование файла (игнорируем якорь)
+        if file_path:  # Пропускаем пустые пути (чистые якоря)
+            link_path = project_root / file_path
+            if not link_path.exists():
+                broken.append(f"  • [{text}]({link})")
     
     if broken:
         return False, f"⚠️  README.md: найдено {len(broken)} битых ссылок:", broken
