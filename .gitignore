@@ -88,3 +88,17 @@ DEVELOPMENT_METHODOLOGY.md
 private/
 _private/
 .private/
+
+# Book in development (personal project)
+book_msw/
+
+# Archive of research materials (not needed by course participants)
+OtherMaterials/
+
+# Development scripts (ontology enrichment and automation)
+enrich_*.py
+enrichment_data.json
+ontology_export_*.csv
+
+# Outdated files
+Структура*.md

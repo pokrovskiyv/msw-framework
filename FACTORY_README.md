@@ -75,7 +75,7 @@ ontology init --project "New_Course"
 ontology add "Агентность"
 
 # Автоматическое обогащение через AI
-python enrich_all_concepts.py
+python ontology_toolkit/enrich_all_concepts.py
 
 # Экспорт
 ontology export --format csv
@@ -263,7 +263,7 @@ ontology init --project "My_Course"
 ontology add "Concept_Name"
 
 # 3. Обогащение через AI
-python enrich_all_concepts.py
+python ontology_toolkit/enrich_all_concepts.py
 
 # 4. Экспорт
 ontology export --format xlsx
@@ -281,7 +281,7 @@ python scripts/update_docs.py
 
 ### Для разработчиков фабрики:
 - [Методология разработки курса](docs/factory/development/DEVELOPMENT_METHODOLOGY.md) — полный пайплайн (1098 строк)
-- [Оценка готовности компонентов](docs/factory/system/ASSESSMENT.md)
+- [Оценка готовности компонентов](docs/factory/reports/ASSESSMENT.md)
 - [Автоматизация](docs/factory/automation/) — скрипты и CI/CD
 - [История изменений](FACTORY_CHANGELOG.md) — развитие инструментов
 
@@ -380,7 +380,7 @@ course-generator create "Системное лидерство" \
 - **[FACTORY_CHANGELOG.md](FACTORY_CHANGELOG.md)** — история развития инструментов
 - **[Методология разработки](docs/factory/development/DEVELOPMENT_METHODOLOGY.md)** — как создавать курсы
 - **[Детальный анализ](OtherMaterials/Provodnik_As_Course_Factory.md)** — концепция "Проводник" как фабрика курсов
-- **[Дорожная карта](docs/factory/system/ASSESSMENT.md)** — планы развития
+- **[Дорожная карта](docs/factory/reports/ASSESSMENT.md)** — планы развития
 
 ---
 

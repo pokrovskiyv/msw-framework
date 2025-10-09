@@ -136,7 +136,7 @@ def check_major_changes_documentation(project_root: Path, days: int = 7) -> Tupl
     # Проверяем, обновлялись ли ключевые документы после мажорных изменений
     changelog_path = project_root / "CHANGELOG.md"
     readme_path = project_root / "README.md"
-    assessment_path = project_root / "ASSESSMENT.md"
+    assessment_path = project_root / "docs" / "factory" / "reports" / "ASSESSMENT.md"
     
     # Получаем время последнего изменения мажорных файлов
     latest_major_change = None
@@ -208,7 +208,7 @@ def check_assessment_vs_weeks(project_root: Path, auto_update: bool = False) -> 
     Returns:
         (is_ok, message, outdated_files)
     """
-    assessment_path = project_root / "ASSESSMENT.md"
+    assessment_path = project_root / "docs" / "factory" / "reports" / "ASSESSMENT.md"
     weeks_dir = project_root / "weeks"
     
     if not assessment_path.exists():

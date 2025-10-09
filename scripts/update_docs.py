@@ -293,7 +293,7 @@ def generate_changelog_entry(
 
 def update_assessment_auto(project_root: Path, changes: Dict[str, List[str]]):
     """Автоматическое обновление ASSESSMENT.md."""
-    assessment_path = project_root / "ASSESSMENT.md"
+    assessment_path = project_root / "docs" / "factory" / "reports" / "ASSESSMENT.md"
     
     if not assessment_path.exists():
         print(f"{Colors.FAIL}❌ ASSESSMENT.md не найден!{Colors.ENDC}")

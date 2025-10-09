@@ -56,7 +56,7 @@ elif [ $EXIT_CODE -eq 2 ]; then
         echo -e "${GREEN}✅ Документация автоматически обновлена${NC}"
         
         # Добавляем обновлённые файлы в коммит
-        git add CHANGELOG.md ASSESSMENT.md README.md 2>/dev/null
+        git add CHANGELOG.md docs/factory/reports/ASSESSMENT.md README.md 2>/dev/null
         
         echo -e "${GREEN}✅ Изменения добавлены в коммит. Продолжаем...${NC}"
         exit 0
