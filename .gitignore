@@ -83,3 +83,8 @@ DEVELOPMENT_METHODOLOGY.md
 
 # Temporary files
 .temp/
+
+# Private folder (only local, never committed to Git)
+private/
+_private/
+.private/
