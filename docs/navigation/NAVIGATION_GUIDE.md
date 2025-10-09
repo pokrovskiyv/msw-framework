@@ -36,34 +36,34 @@
 - **Чек-листы:** `checklists/` (2 файла)
 
 ### 📊 Отслеживание прогресса
-- **Метрики:** `Metrics_Framework.md`
-- **Ретроспективы:** `Weekly_Retro_Template.md`
-- **Dashboard:** `Progress_Dashboard_Template.md`
+- **Метрики:** `docs/facilitators/Metrics_Framework.md`
+- **Ретроспективы:** `docs/facilitators/templates/Weekly_Retro_Template.md`
+- **Dashboard:** `docs/facilitators/templates/Progress_Dashboard_Template.md`
 
 ### 💬 Обратная связь
-- **Peer review:** `Peer_Review_Template.md`
-- **Самопроверка:** `Self_Check_Before_Publication.md`
-- **Система:** `Feedback_System.md`
+- **Peer review:** `docs/facilitators/Peer_Review_Template.md`
+- **Самопроверка:** `docs/facilitators/Self_Check_Before_Publication.md`
+- **Система:** `docs/facilitators/Feedback_System.md`
 
 ### 📖 Самостоятельное изучение
-- **Полное руководство:** `SELF_STUDY_GUIDE.md`
-- **Чек-лист:** `SELF_STUDY_CHECKLIST.md`
-- **Поиск сообщества:** `COMMUNITY_GUIDE.md`
+- **Полное руководство:** `docs/guides/SELF_STUDY_GUIDE.md`
+- **Чек-лист:** `docs/guides/SELF_STUDY_CHECKLIST.md`
+- **Поиск сообщества:** `docs/facilitators/COMMUNITY_GUIDE.md`
 
 ### 📝 Работа с контрактом
-- **Инструкция:** `How_to_fill_contract.md`
+- **Инструкция:** `docs/guides/How_to_fill_contract.md`
 - **Пример:** `Example_Contract.md`
 - **Шаблон:** `Personal_Contract_v4.0_Template.md`
-- **С AI ассистентом:** `AI_ASSISTANT_GUIDE.md` (дополнительно)
+- **С AI ассистентом:** `docs/guides/AI_ASSISTANT_GUIDE.md` (дополнительно)
 
 ---
 
 ## 👨‍🏫 Для ведущего курса
 
 ### 🚀 Запуск курса
-- **Полное руководство:** `PILOT_LAUNCH_GUIDE.md`
-- **Быстрый старт:** `PILOT_CHECKLIST.md`
-- **Выбор платформы:** `PLATFORM_COMPARISON.md`
+- **Полное руководство:** `docs/facilitators/PILOT_LAUNCH_GUIDE.md`
+- **Быстрый старт:** `docs/facilitators/PILOT_CHECKLIST.md`
+- **Выбор платформы:** `docs/facilitators/PLATFORM_COMPARISON.md`
 
 ### 📚 Материалы для проведения
 - **Все недели:** `weeks/` (8 файлов)
@@ -72,14 +72,14 @@
 - **Чек-листы:** `checklists/` (2 файла)
 
 ### 📊 Система оценки
-- **Метрики:** `Metrics_Framework.md`
-- **Ретроспективы:** `Weekly_Retro_Template.md`
-- **Dashboard:** `Progress_Dashboard_Template.md`
+- **Метрики:** `docs/facilitators/Metrics_Framework.md`
+- **Ретроспективы:** `docs/facilitators/templates/Weekly_Retro_Template.md`
+- **Dashboard:** `docs/facilitators/templates/Progress_Dashboard_Template.md`
 
 ### 💬 Система обратной связи
-- **Peer review:** `Peer_Review_Template.md`
-- **Самопроверка:** `Self_Check_Before_Publication.md`
-- **Система:** `Feedback_System.md`
+- **Peer review:** `docs/facilitators/Peer_Review_Template.md`
+- **Самопроверка:** `docs/facilitators/Self_Check_Before_Publication.md`
+- **Система:** `docs/facilitators/Feedback_System.md`
 
 ### 🛠️ Инструменты
 - **CLI:** `course_cli/` — автоматизация работы
@@ -137,7 +137,7 @@
 
 ### 📈 Анализ и оценка
 - **Оценка фреймворка:** `docs/factory/system/ASSESSMENT.md`
-- **Метрики:** `Metrics_Framework.md`
+- **Метрики:** `docs/facilitators/Metrics_Framework.md`
 - **Задачи:** `docs/factory/system/tasks.json`
 
 ---
@@ -148,9 +148,9 @@
 ```
 ├── README.md                           # Главная страница
 ├── Systemic_Career_Framework_v2.md     # Основной фреймворк
-├── Personal_Contract_v4.0_Template.md  # Шаблон контракта
-├── How_to_fill_contract.md             # Инструкция по заполнению
-├── Example_Contract.md                 # Пример заполненного контракта
+├── Personal_Contract_v4.0_Template.md          # Шаблон контракта
+├── docs/guides/How_to_fill_contract.md         # Инструкция по заполнению
+├── Example_Contract.md                         # Пример заполненного контракта
 ```
 
 ### 📚 Материалы курса
@@ -179,26 +179,32 @@
 
 ### 📊 Система метрик и обратной связи
 ```
-├── Metrics_Framework.md                # Система метрик
-├── Weekly_Retro_Template.md            # Шаблон ретроспективы
-├── Progress_Dashboard_Template.md       # Dashboard прогресса
-├── Feedback_System.md                  # Система обратной связи
-├── Peer_Review_Template.md              # Шаблон peer review
-└── Self_Check_Before_Publication.md    # Чек-лист самопроверки
+docs/facilitators/
+├── Metrics_Framework.md                        # Система метрик
+├── Feedback_System.md                          # Система обратной связи
+├── Peer_Review_Template.md                     # Шаблон peer review
+├── Self_Check_Before_Publication.md            # Чек-лист самопроверки
+└── templates/
+    ├── Weekly_Retro_Template.md                # Шаблон ретроспективы
+    └── Progress_Dashboard_Template.md          # Dashboard прогресса
 ```
 
 ### 🚀 Запуск и проведение курса
 ```
-├── PILOT_LAUNCH_GUIDE.md               # Руководство по запуску пилота
-├── PILOT_CHECKLIST.md                  # Чек-лист для быстрого старта
-└── PLATFORM_COMPARISON.md              # Сравнение платформ
+docs/facilitators/
+├── PILOT_LAUNCH_GUIDE.md                       # Руководство по запуску пилота
+├── PILOT_CHECKLIST.md                          # Чек-лист для быстрого старта
+├── PLATFORM_COMPARISON.md                      # Сравнение платформ
+└── COMMUNITY_GUIDE.md                          # Руководство по поиску сообщества
 ```
 
 ### 📖 Самостоятельное прохождение
 ```
-├── SELF_STUDY_GUIDE.md                 # Руководство для самостоятельного изучения
-├── SELF_STUDY_CHECKLIST.md             # Чек-лист для самостоятельного изучения
-└── COMMUNITY_GUIDE.md                  # Руководство по поиску сообщества
+docs/guides/
+├── SELF_STUDY_GUIDE.md                         # Руководство для самостоятельного изучения
+├── SELF_STUDY_CHECKLIST.md                     # Чек-лист для самостоятельного изучения
+├── How_to_fill_contract.md                     # Работа с контрактом
+└── AI_ASSISTANT_GUIDE.md                       # Работа с AI
 ```
 
 ### 🛠️ Инструменты разработки
@@ -229,14 +235,14 @@
 - **Примеры:** `examples/`
 
 ### 📊 Метрики и отслеживание
-- **Метрики:** `Metrics_Framework.md`
-- **Ретроспективы:** `Weekly_Retro_Template.md`
-- **Dashboard:** `Progress_Dashboard_Template.md`
+- **Метрики:** `docs/facilitators/Metrics_Framework.md`
+- **Ретроспективы:** `docs/facilitators/templates/Weekly_Retro_Template.md`
+- **Dashboard:** `docs/facilitators/templates/Progress_Dashboard_Template.md`
 
 ### 💬 Обратная связь
-- **Peer review:** `Peer_Review_Template.md`
-- **Самопроверка:** `Self_Check_Before_Publication.md`
-- **Система:** `Feedback_System.md`
+- **Peer review:** `docs/facilitators/Peer_Review_Template.md`
+- **Самопроверка:** `docs/facilitators/Self_Check_Before_Publication.md`
+- **Система:** `docs/facilitators/Feedback_System.md`
 
 ### 🚀 Запуск и проведение
 - **Пилот:** `PILOT_*`
@@ -256,7 +262,7 @@
 1. `README.md` → `weeks/Week_01_Foundation_v2.md` → `templates/Personal_Contract_v1.0_Week1_Template.md`
 
 ### Для ведущих
-1. `PILOT_LAUNCH_GUIDE.md` → `PILOT_CHECKLIST.md` → `PLATFORM_COMPARISON.md`
+1. `docs/facilitators/PILOT_LAUNCH_GUIDE.md` → `docs/facilitators/PILOT_CHECKLIST.md` → `docs/facilitators/PLATFORM_COMPARISON.md`
 
 ### Для разработчиков
 1. `DEVELOPMENT_METHODOLOGY.md` → `ASSESSMENT.md` → `tasks.json`

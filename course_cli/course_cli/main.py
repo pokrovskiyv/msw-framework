@@ -540,7 +540,7 @@ def ai_guide(
     - Примеры правильных диалогов
     - Troubleshooting проблем
     """
-    ai_guide_path = PROJECT_ROOT / "AI_ASSISTANT_GUIDE.md"
+    ai_guide_path = PROJECT_ROOT / "docs/guides/AI_ASSISTANT_GUIDE.md"
     
     if not ai_guide_path.exists():
         console.print(f"[red]❌ Руководство по AI не найдено: {ai_guide_path}[/red]")

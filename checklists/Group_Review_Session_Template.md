@@ -245,8 +245,8 @@
 
 ## 🔗 Связанные материалы
 
-- [Система обратной связи](../Feedback_System.md)
-- [Шаблон peer review](../Peer_Review_Template.md)
+- [Система обратной связи](../docs/facilitators/Feedback_System.md)
+- [Шаблон peer review](../docs/facilitators/Peer_Review_Template.md)
 - [Шаблон feedback от ментора](Mentor_Feedback_Template.md)
 - [Кейс-стади: Как групповые ревью помогли Сергею](../case_studies/Case_02_Dev_To_Architect.md)
 

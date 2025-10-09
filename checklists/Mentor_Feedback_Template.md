@@ -198,9 +198,9 @@
 
 ## 🔗 Связанные материалы
 
-- [Система обратной связи](../Feedback_System.md)
-- [Шаблон peer review](../Peer_Review_Template.md)
-- [Чек-лист самопроверки перед публикацией](../Self_Check_Before_Publication.md)
+- [Система обратной связи](../docs/facilitators/Feedback_System.md)
+- [Шаблон peer review](../docs/facilitators/Peer_Review_Template.md)
+- [Чек-лист самопроверки перед публикацией](../docs/facilitators/Self_Check_Before_Publication.md)
 - [Кейс-стади: Как feedback помог Анне улучшить user stories](../case_studies/Case_01_Analyst_Transition.md)
 
 ---

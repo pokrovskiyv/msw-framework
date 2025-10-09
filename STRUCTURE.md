@@ -20,9 +20,9 @@
 - **`case_studies/`** — кейсы-стади (аналитик, разработчик, лид)
 
 ### Руководства
-- **`SELF_STUDY_GUIDE.md`** — руководство для самостоятельного прохождения
-- **`How_to_fill_contract.md`** — как заполнять Личный контракт
-- **`AI_ASSISTANT_GUIDE.md`** — работа с AI-консультантом
+- **`docs/guides/SELF_STUDY_GUIDE.md`** — руководство для самостоятельного прохождения
+- **`docs/guides/How_to_fill_contract.md`** — как заполнять Личный контракт
+- **`docs/guides/AI_ASSISTANT_GUIDE.md`** — работа с AI-консультантом
 
 ### CLI инструмент
 - **`course_cli/`** — командная строка для навигации по курсу
@@ -36,13 +36,13 @@
 
 **Материалы для проведения курса с группой участников:**
 
-- **`PILOT_LAUNCH_GUIDE.md`** — полное руководство по запуску пилота
-- **`PILOT_CHECKLIST.md`** — чек-лист для быстрого старта
-- **`PLATFORM_COMPARISON.md`** — сравнение платформ (GitHub, Discord, Notion)
-- **`Feedback_System.md`** — система обратной связи и peer review
-- **`Metrics_Framework.md`** — система метрик для отслеживания прогресса
-- **`Weekly_Retro_Template.md`** — шаблон еженедельной ретроспективы
-- **`Progress_Dashboard_Template.md`** — dashboard прогресса участников
+- **`docs/facilitators/PILOT_LAUNCH_GUIDE.md`** — полное руководство по запуску пилота
+- **`docs/facilitators/PILOT_CHECKLIST.md`** — чек-лист для быстрого старта
+- **`docs/facilitators/PLATFORM_COMPARISON.md`** — сравнение платформ (GitHub, Discord, Notion)
+- **`docs/facilitators/Feedback_System.md`** — система обратной связи и peer review
+- **`docs/facilitators/Metrics_Framework.md`** — система метрик для отслеживания прогресса
+- **`docs/facilitators/templates/Weekly_Retro_Template.md`** — шаблон еженедельной ретроспективы
+- **`docs/facilitators/templates/Progress_Dashboard_Template.md`** — dashboard прогресса участников
 
 ---
 
@@ -150,8 +150,8 @@ Course_System_Career/
 
 ### Для новичков
 1. Начните с **[README.md](README.md)** — выберите свою роль
-2. Участники → **[SELF_STUDY_GUIDE.md](SELF_STUDY_GUIDE.md)**
-3. Ведущие → **[PILOT_LAUNCH_GUIDE.md](PILOT_LAUNCH_GUIDE.md)**
+2. Участники → **[SELF_STUDY_GUIDE.md](docs/guides/SELF_STUDY_GUIDE.md)**
+3. Ведущие → **[PILOT_LAUNCH_GUIDE.md](docs/facilitators/PILOT_LAUNCH_GUIDE.md)**
 
 ### Навигация
 - **[docs/navigation/INDEX.md](docs/navigation/INDEX.md)** — полный индекс материалов
