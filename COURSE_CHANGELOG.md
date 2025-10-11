@@ -12,6 +12,21 @@
 
 ## [Unreleased]
 
+### Added (11.10.2025)
+- **Модульная архитектура MSW** (projects/msw/)
+  - `vision.md`: добавлен раздел про модульную систему (Memory Module как killer feature)
+  - `roadmap.md`: добавлен Этап 5 "Marketplace модулей" (2027-2028)
+  - `business_model.md`: добавлен раздел "Модули" (à la carte pricing $5-15/мес)
+  - Memory Module: вдохновлено Personal AI Platform — auto-linking размышлений с проектами
+
+### Changed (11.10.2025)
+- **Терминология: "энергобюджет" → "продуктивное состояние"**
+  - `weeks/Week_08_Resilience.md`: все упоминания обновлены
+  - `Personal_Contract_v4.0_Template.md`: раздел 7 переименован
+  - `templates/Week_08_Energy_Budget.md` → `Week_08_Productive_State.md`
+  - Примеры контрактов (persona_1, persona_2, persona_3): разделы обновлены
+  - Обоснование: "продуктивное состояние" точнее описывает управление энергией, фокусом и мотивацией
+
 ### Added (10.10.2025)
 - **Постепенное внедрение ритуалов** в курс (Неделя 1 → Неделя 2 → Неделя 4)
   - Week_01: добавлен раздел "Операционный ритуал" (ежедневные заметки 15 мин)
