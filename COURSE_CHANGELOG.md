@@ -13,11 +13,21 @@
 ## [Unreleased]
 
 ### Added (11.10.2025)
+- **MSW Multi-Interface Architecture** (projects/msw/)
+  - Архитектура: 4 интерфейса (Cursor + Telegram + ChatGPT + Web) с unified backend
+  - `roadmap.md`: обновлён с multi-interface системой, Telegram + ChatGPT ПАРАЛЛЕЛЬНО (Этап 3)
+  - Обоснование ChatGPT: 180M+ users, ChatGPT Store distribution, экономия API costs ($50-100/мес на user)
 - **Модульная архитектура MSW** (projects/msw/)
   - `vision.md`: добавлен раздел про модульную систему (Memory Module как killer feature)
-  - `roadmap.md`: добавлен Этап 5 "Marketplace модулей" (2027-2028)
+  - `roadmap.md`: добавлен Этап 5 "Исполнительные модули", Этап 6 "Marketplace модулей"
   - `business_model.md`: добавлен раздел "Модули" (à la carte pricing $5-15/мес)
   - Memory Module: вдохновлено Personal AI Platform — auto-linking размышлений с проектами
+- **FPP-compliant структура** (projects/msw/vision.md)
+  - FPF metadata: F=4, G=stakeholders, R=0.7
+  - Типы холонов: MSW как Episteme/System/Community (FPF A.1: Holonic Foundation)
+  - Design Rationale Records (FPF E.9): 4 ADR с формальным обоснованием решений
+  - Формальное определение Module (FPF C.3, A.6): Signature, Types, Lifecycle, API Standard
+  - Assumptions Audit (FPF D.5): 8 assumptions с F-G-R, validation plan, bias audit
 
 ### Changed (11.10.2025)
 - **Терминология: "энергобюджет" → "продуктивное состояние"**
