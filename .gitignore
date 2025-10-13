@@ -71,6 +71,10 @@ strategy_*.md
 ethical_filters.md
 Week_*_Energy_Budget_*.md
 
+# Private folders (protected from public sync)
+projects/
+PKM/
+
 # Others
 .DS_Store
 *.bak
