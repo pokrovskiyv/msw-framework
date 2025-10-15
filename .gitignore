@@ -83,6 +83,11 @@ DEVELOPMENT_METHODOLOGY.md
 # Temporary files
 .temp/
 
+# Encoding backups (from check_encoding.py script)
+encoding_backups/
+*.backup
+encoding_report.txt
+
 # Private folder (only local, never committed to Git)
 private/
 _private/

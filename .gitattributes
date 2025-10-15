@@ -1,3 +1,18 @@
+# Encoding and line endings for all text files
+* text=auto eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+
+# Windows scripts
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
 # Личные данные - всегда использовать локальную версию при merge
 projects/ merge=ours
 personal_contracts/ merge=ours
@@ -10,5 +25,3 @@ my_contract_*.md merge=ours
 strategy_*.md merge=ours
 ethical_filters.md merge=ours
 Week_*_Energy_Budget_*.md merge=ours
-
-
