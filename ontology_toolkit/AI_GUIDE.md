@@ -483,5 +483,5 @@ ontology fill C_15 --context "Относится к Week 6: Mastery"
 
 **Версия:** v0.3.0  
 **Дата:** 02.10.2025  
-**Автор:** System Career Team
+**Автор:** MSW Framework Team
 

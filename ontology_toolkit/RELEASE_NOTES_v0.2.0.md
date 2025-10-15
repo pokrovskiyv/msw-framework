@@ -200,7 +200,7 @@ ontology graph --output visuals/ontology.mmd
 
 ## 🙏 Благодарности
 
-Спасибо System Career Team за поддержку проекта!
+Спасибо MSW Framework Team за поддержку проекта!
 
 ---
 

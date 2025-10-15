@@ -48,7 +48,7 @@ Write-Host "[OK] UTF-8 encoding configured" -ForegroundColor Green
 
 ```powershell
 # Перейдите в ваш проект
-cd "C:\Projects\System Career\Course_System_Career"
+cd "C:\Projects\msw-framework"
 
 # Добавьте понятие с кириллицей
 ontology add "Агентность"

@@ -69,7 +69,7 @@
 
 **Обязательные файлы для участников:**
 ```
-Course_System_Career/
+msw-framework/
 ├── README.md                           # Точка входа
 ├── QUICK_START_CLI.md                  # Быстрый старт
 ├── weeks/                              # Материалы недель

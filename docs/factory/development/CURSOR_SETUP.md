@@ -28,7 +28,7 @@ course info
 
 ### Шаг 2: Откройте проект в Cursor
 
-1. Откройте папку `Course_System_Career` в Cursor
+1. Откройте папку `msw-framework` в Cursor
 2. Cursor автоматически подхватит файл `.cursorrules`
 3. Готово! Теперь можете работать через чат
 

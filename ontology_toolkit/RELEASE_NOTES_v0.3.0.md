@@ -239,5 +239,5 @@ ontology fill C_1
 - [USER_GUIDE.md](./USER_GUIDE.md) — полное руководство
 
 **Вопросы и поддержка:**  
-System Career Team
+MSW Framework Team
 

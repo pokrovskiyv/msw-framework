@@ -399,7 +399,7 @@ course-generator create "Системное лидерство" \
 
 ## 📧 Контакты
 
-System Career Team
+MSW Framework Team
 
 **Лицензия:** MIT
 

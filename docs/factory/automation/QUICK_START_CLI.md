@@ -180,7 +180,7 @@ pip list | grep systemic-career
 **Решение:** CLI автоматически ищет корень. Если не находит:
 ```bash
 # Перейдите в корень проекта
-cd /path/to/Course_System_Career
+cd /path/to/msw-framework
 
 # Теперь команды будут работать
 course start-week 1

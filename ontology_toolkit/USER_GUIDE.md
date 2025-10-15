@@ -461,4 +461,4 @@ ontology export --format csv
 
 **Версия:** 0.1.0  
 **Дата:** 01.10.2025  
-**Автор:** System Career Team
+**Автор:** MSW Framework Team

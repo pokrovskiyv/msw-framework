@@ -249,4 +249,4 @@ MIT
 
 ## Авторы
 
-System Career Team
+MSW Framework Team

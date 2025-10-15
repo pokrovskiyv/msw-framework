@@ -10,7 +10,7 @@ Ontology Toolkit — инструмент для управления онтол
 """
 
 __version__ = "0.1.0"
-__author__ = "System Career Team"
+__author__ = "MSW Framework Team"
 
 from ontology_toolkit.core.concept import ConceptFile, ConceptFactory
 from ontology_toolkit.core.ontology import Ontology, OntologyIndex

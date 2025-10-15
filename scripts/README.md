@@ -380,7 +380,7 @@ course docs check --days 14
 
 **Решение:** Запускайте скрипты из корня проекта:
 ```bash
-cd /path/to/Course_System_Career
+cd /path/to/msw-framework
 python scripts/check_docs_sync.py
 ```
 
@@ -410,5 +410,5 @@ MIT
 
 ## Авторы
 
-System Career Team
+MSW Framework Team
 

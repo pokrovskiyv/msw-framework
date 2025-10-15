@@ -185,7 +185,7 @@ Cursor выполняет: course ai-guide
 Course CLI работает с существующей структурой проекта:
 
 ```
-Course_System_Career/
+msw-framework/
 ├── weeks/                    # Материалы недель
 │   ├── Week_01_Foundation.md
 │   ├── Week_02_Direction.md

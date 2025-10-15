@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "System Career Team"}
+    {name = "MSW Framework Team"}
 ]
 keywords = ["career", "course", "cli", "systemic"]
 classifiers = [

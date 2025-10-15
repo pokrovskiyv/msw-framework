@@ -97,7 +97,7 @@
 ## 📂 Полная структура директорий
 
 ```
-Course_System_Career/
+msw-framework/
 ├── weeks/                      # 8 недель курса
 │   ├── Week_01_Foundation_v2.md
 │   ├── Week_02_Direction.md

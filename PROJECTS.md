@@ -46,7 +46,7 @@
 ### Клонирование репозитория с submodules
 
 ```bash
-git clone --recurse-submodules https://github.com/pokrovskiyv/Course_System_Career.git
+git clone --recurse-submodules https://github.com/pokrovskiyv/msw-framework.git
 ```
 
 ### Обновление submodules

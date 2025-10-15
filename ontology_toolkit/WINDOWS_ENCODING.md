@@ -141,12 +141,12 @@ Get-Content .ontology\concepts\C_1_agentnost.md -Encoding UTF8
 
 ```powershell
 # Добавление понятий с кириллицей
-PS C:\Projects\...\Course_System_Career> ontology add "Рефлексия"
+PS C:\Projects\...\msw-framework> ontology add "Рефлексия"
 [OK] Создано: C_7 — Рефлексия          ← Правильная кириллица в консоли!
 [FILE] C_7_refleksiya.md                ← Транслитерация в имени файла
 
 # Просмотр списка
-PS C:\Projects\...\Course_System_Career> ontology list
+PS C:\Projects\...\msw-framework> ontology list
 ┏━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━┓
 ┃ ID  ┃ Название      ┃ Статус ┃ Тип ┃
 ┡━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━┩
@@ -156,7 +156,7 @@ PS C:\Projects\...\Course_System_Career> ontology list
 └─────┴───────────────┴────────┴─────┘
 
 # Проверка содержимого файла
-PS C:\Projects\...\Course_System_Career> Get-Content .ontology/concepts/C_7_refleksiya.md -Encoding UTF8 | Select-String "^name:"
+PS C:\Projects\...\msw-framework> Get-Content .ontology/concepts/C_7_refleksiya.md -Encoding UTF8 | Select-String "^name:"
 name: Рефлексия                        ← Правильная кириллица в файле!
 ```
 

@@ -62,18 +62,13 @@ pip-wheel-metadata/
 # Docs (Sphinx)
 docs/_build/
 
-# Personal contracts and private data
-personal_contracts/
-*.personal.md
-my_contract_*.md
-*_week*.md
-strategy_*.md
-ethical_filters.md
-Week_*_Energy_Budget_*.md
+# Private repository setup files
+PRIVATE_REPO_SETUP.md
+sync-from-public.ps1
+sync-from-public.sh
 
-# Private folders (protected from public sync)
-projects/
-PKM/
+# Audit reports (private analysis)
+audit_reports/
 
 # Others
 .DS_Store

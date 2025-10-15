@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-    {name = "System Career Team"}
+    {name = "MSW Framework Team"}
 ]
 keywords = ["ontology", "fpf", "knowledge-management", "concepts", "ai", "llm"]
 classifiers = [

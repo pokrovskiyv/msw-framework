@@ -1,0 +1,14 @@
+# Личные данные - всегда использовать локальную версию при merge
+projects/ merge=ours
+personal_contracts/ merge=ours
+PKM/ merge=ours
+
+# Дополнительная защита для личных файлов
+*.personal.md merge=ours
+my_contract_*.md merge=ours
+*_week*.md merge=ours
+strategy_*.md merge=ours
+ethical_filters.md merge=ours
+Week_*_Energy_Budget_*.md merge=ours
+
+

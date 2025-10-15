@@ -236,7 +236,7 @@ my_contract_*.md
 ### 1. Структура репозитория
 Рекомендуемая структура после очистки:
 ```
-Course_System_Career/
+msw-framework/
 ├── README.md
 ├── Systemic_Career_Framework_v2.md
 ├── Personal_Contract_v4.0_Template.md
