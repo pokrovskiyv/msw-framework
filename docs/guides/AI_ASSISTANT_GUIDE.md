@@ -425,7 +425,7 @@ course contract init --week 1
 # Проверить прогресс
 course progress
 
-# Создать шаблон энергобюджета
+# Создать шаблон продуктивное состояниеа
 course template Week_08_Energy
 ```
 

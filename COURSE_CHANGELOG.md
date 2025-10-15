@@ -30,7 +30,7 @@
   - Assumptions Audit (FPF D.5): 8 assumptions с F-G-R, validation plan, bias audit
 
 ### Changed (11.10.2025)
-- **Терминология: "энергобюджет" → "продуктивное состояние"**
+- **Терминология: "продуктивное состояние" → "продуктивное состояние"**
   - `weeks/Week_08_Resilience.md`: все упоминания обновлены
   - `Personal_Contract_v4.0_Template.md`: раздел 7 переименован
   - `templates/Week_08_Energy_Budget.md` → `Week_08_Productive_State.md`
